@@ -15,8 +15,8 @@ body { font-family: Arial, sans-serif; padding: 20px; }
 .controls { margin: 10px 0; }
 .image-container { display: flex; gap: 10px; flex-wrap: wrap; }
 .image-box { position: relative; width: 120px; height: 120px; border: 2px solid #ccc; border-radius: 8px; overflow: hidden; background: #f9f9f9; cursor: grab; }
-.image-box img { width: 100%; height: 100%; object-fit: contain; }
-.delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
+.image-box img { width: 120px; height: 120px; object-fit: contain; }
+.delete-btn { position: absolute; top: 5px; right: 5px; background: gray; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
 .drag-over { border: 2px dashed #007bff; }
 </style>
 </head>
@@ -37,7 +37,7 @@ const saveBtn = document.getElementById("save-btn");
 const backMainBtn = document.getElementById("back-main");
 const addRowBtn = document.getElementById("add-row-btn");
 
-let pages = ["default","recommended"]; // 初期2ページ
+let pages = ["default","recommended"];
 let currentPage = pages[0];
 let rowCount = 0;
 
@@ -54,10 +54,10 @@ const moveList = [
       "SA1","SA2","SA3",
       "ドライブラッシュ","ドライブインパクト","投げ","ジャンプ","前ステップ",
       "J弱P","J中P","J強P","J弱K","J中K","J強K"
-    ];
+];
 
 const imageMap = {};
-moveList.forEach(move=>{ imageMap[move]=`images/sagat/${move}.png`; });
+moveList.forEach(move => { imageMap[move] = `images/sagat/${move}.png`; });
 
 // --- ページ切替
 function renderPageNav(){
@@ -74,7 +74,6 @@ function renderPageNav(){
       renderPageNav();
     });
     pageNav.appendChild(btn);
-    // 削除ボタン（初期ページ以外）
     if(!["default","recommended"].includes(p)){
       const delBtn = document.createElement("button");
       delBtn.textContent="×";
@@ -115,14 +114,14 @@ function saveCurrentPage(){
     const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
     data.push({title,moves});
   });
-  localStorage.setItem(`comboData_${currentPage}`,JSON.stringify(data));
+  localStorage.setItem(`comboData_sagat_${currentPage}`,JSON.stringify(data));
 }
 
 // --- ページ読み込み
 function loadPage(){
   comboArea.innerHTML="";
   rowCount=0;
-  const data=JSON.parse(localStorage.getItem(`comboData_${currentPage}`)||"[]");
+  const data=JSON.parse(localStorage.getItem(`comboData_sagat_${currentPage}`)||"[]");
   data.forEach(d=>addRow(d));
 }
 
