@@ -1,0 +1,8 @@
+# Firebase 管理者キーを無視
+firebase/serviceAccountKey.json
+
+# Node 関連
+node_modules/
+
+# Mac の不要ファイル
+.DS_Store
