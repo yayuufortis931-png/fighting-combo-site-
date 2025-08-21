@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>おすすめコンボ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #fafafa;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    .combo-row {
+      margin-bottom: 25px;
+      padding: 10px;
+      border: 2px solid #666;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .row-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .image-container {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .image-box {
+      width: 120px;
+      height: 120px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .image-box img {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+    }
+    .notice {
+      color: gray;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2 id="page-title">おすすめコンボ</h2>
+
+  <div id="combo-area"></div>
+  <div class="notice">※ このページは閲覧専用です</div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+
+    // ====== Firebase 設定 ======
+    const firebaseConfig = {
+      apiKey: "AIzaSyAD4fyc-1VlEEGGO631hhpZqCOqllrQ3og",
+      authDomain: "st6-combo-maker.firebaseapp.com",
+      projectId: "st6-combo-maker",
+      storageBucket: "st6-combo-maker.firebasestorage.app",
+      messagingSenderId: "945906359459",
+      appId: "1:945906359459:web:59a955b609426cf2893316",
+      measurementId: "G-YVFY7H6N9E"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ====== DOM 参照 ======
+    const comboArea = document.getElementById("combo-area");
+    const pageTitle = document.getElementById("page-title");
+
+    // ====== URLパラメータからキャラ名を取得 ======
+    const params = new URLSearchParams(window.location.search);
+    const currentChar = params.get("char");
+
+    if (!currentChar) {
+      pageTitle.textContent = "キャラが指定されていません";
+    } else {
+      pageTitle.textContent = `${currentChar} のおすすめコンボ`;
+      loadRecommended(currentChar);
+    }
+
+    // ====== Firestore 読み込み ======
+    async function loadRecommended(charName) {
+      try {
+        const ref = doc(db, "recommended", charName);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+          comboArea.innerHTML = `<p>まだおすすめが登録されていません</p>`;
+          return;
+        }
+        const data = snap.data();
+        renderCombos(data.combos || []);
+      } catch (e) {
+        comboArea.innerHTML = `<p style="color:red;">読み込み失敗: ${e}</p>`;
+      }
+    }
+
+    // ====== 表示処理 ======
+    function renderCombos(combos) {
+      comboArea.innerHTML = "";
+      combos.forEach(c => {
+        const rowDiv = document.createElement("div");
+        rowDiv.classList.add("combo-row");
+
+        const titleDiv = document.createElement("div");
+        titleDiv.classList.add("row-title");
+        titleDiv.textContent = c.title || "コンボ";
+        rowDiv.appendChild(titleDiv);
+
+        const container = document.createElement("div");
+        container.classList.add("image-container");
+        (c.moves || []).forEach(move => {
+          const box = document.createElement("div");
+          box.classList.add("image-box");
+          const img = document.createElement("img");
+          img.src = `images/${currentChar}/${move}.png`;
+          img.alt = move;
+          box.appendChild(img);
+          container.appendChild(box);
+        });
+
+        rowDiv.appendChild(container);
+        comboArea.appendChild(rowDiv);
+      });
+    }
+  </script>
+</body>
+</html>
