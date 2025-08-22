@@ -1,139 +1,135 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>おすすめコンボ</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #fafafa;
-    }
-    h2 {
-      margin-bottom: 10px;
-    }
-    .combo-row {
-      margin-bottom: 25px;
-      padding: 10px;
-      border: 2px solid #666;
-      border-radius: 8px;
-      background: #fff;
-    }
-    .row-title {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-    .image-container {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .image-box {
-      width: 120px;
-      height: 120px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #f9f9f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .image-box img {
-      width: 120px;
-      height: 120px;
-      object-fit: contain;
-    }
-    .notice {
-      color: gray;
-      margin-top: 20px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>サガットおすすめコンボ</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+h2 { text-align: center; margin-bottom: 30px; }
+
+/* 戻るボタン */
+.back-buttons { margin-bottom: 20px; text-align: center; }
+.back-buttons button {
+  margin: 0 5px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  background: #888; /* 灰色固定 */
+  color: #fff;
+  cursor: pointer;
+}
+
+/* カード風 */
+.combo-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* タイトル */
+.combo-title { 
+  font-weight: bold; 
+  font-size: 18px; 
+  margin-bottom: 10px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+/* 技画像コンテナ */
+.moves-container { 
+  display: flex; 
+  gap: 10px; 
+  overflow-x: auto; 
+  padding-bottom: 5px;
+  -webkit-overflow-scrolling: touch; /* スムーズスクロール */
+}
+
+.moves-container img { 
+  flex: 0 0 auto; /* 横並び固定 */
+  width: 80px; 
+  height: 80px; 
+  object-fit: contain; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  background: #f0f0f0; 
+  padding: 5px; 
+}
+
+/* スマホ向け微調整 */
+@media (max-width: 480px) {
+  .combo-title { font-size: 16px; }
+  .moves-container img { width: 60px; height: 60px; }
+}
+</style>
 </head>
 <body>
-  <h2 id="page-title">おすすめコンボ</h2>
 
-  <div id="combo-area"></div>
-  <div class="notice">※ このページは閲覧専用です</div>
+<h2>サガットおすすめコンボ</h2>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+<div class="back-buttons">
+  <button onclick="location.href='index.html'">🏠 トップへ戻る</button>
+  <button onclick="location.href='sagat.html'">✏️ コンボ管理ページへ戻る</button>
+</div>
 
-    // ====== Firebase 設定 ======
-    const firebaseConfig = {
-      apiKey: "AIzaSyAD4fyc-1VlEEGGO631hhpZqCOqllrQ3og",
-      authDomain: "st6-combo-maker.firebaseapp.com",
-      projectId: "st6-combo-maker",
-      storageBucket: "st6-combo-maker.firebasestorage.app",
-      messagingSenderId: "945906359459",
-      appId: "1:945906359459:web:59a955b609426cf2893316",
-      measurementId: "G-YVFY7H6N9E"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+<div id="combo-display"></div>
 
-    // ====== DOM 参照 ======
-    const comboArea = document.getElementById("combo-area");
-    const pageTitle = document.getElementById("page-title");
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-    // ====== URLパラメータからキャラ名を取得 ======
-    const params = new URLSearchParams(window.location.search);
-    const currentChar = params.get("char");
+// Firebase 設定
+const firebaseConfig = {
+  apiKey: "AIzaSyAD4fyc-1VlEEGGO631hhpZqCOqllrQ3og",
+  authDomain: "st6-combo-maker.firebaseapp.com",
+  projectId: "st6-combo-maker",
+  storageBucket: "st6-combo-maker.firebasestorage.app",
+  messagingSenderId: "945906359459",
+  appId: "1:945906359459:web:59a955b609426cf2893316",
+  measurementId: "G-YVFY7H6N9E"
+};
 
-    if (!currentChar) {
-      pageTitle.textContent = "キャラが指定されていません";
-    } else {
-      pageTitle.textContent = `${currentChar} のおすすめコンボ`;
-      loadRecommended(currentChar);
-    }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const comboDisplay = document.getElementById("combo-display");
 
-    // ====== Firestore 読み込み ======
-    async function loadRecommended(charName) {
-      try {
-        const ref = doc(db, "recommended", charName);
-        const snap = await getDoc(ref);
-        if (!snap.exists()) {
-          comboArea.innerHTML = `<p>まだおすすめが登録されていません</p>`;
-          return;
-        }
-        const data = snap.data();
-        renderCombos(data.combos || []);
-      } catch (e) {
-        comboArea.innerHTML = `<p style="color:red;">読み込み失敗: ${e}</p>`;
-      }
-    }
+// サガット用ドキュメント
+const docRef = doc(db, "combos", "サガット");
 
-    // ====== 表示処理 ======
-    function renderCombos(combos) {
-      comboArea.innerHTML = "";
-      combos.forEach(c => {
-        const rowDiv = document.createElement("div");
-        rowDiv.classList.add("combo-row");
+// リアルタイム取得
+onSnapshot(docRef, (docSnap) => {
+  comboDisplay.innerHTML = "";
+  if (docSnap.exists()) {
+    const rows = docSnap.data().rows || [];
+    rows.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "combo-card";
 
-        const titleDiv = document.createElement("div");
-        titleDiv.classList.add("row-title");
-        titleDiv.textContent = c.title || "コンボ";
-        rowDiv.appendChild(titleDiv);
+      const title = document.createElement("div");
+      title.className = "combo-title";
+      title.textContent = r.title;
+      card.appendChild(title);
 
-        const container = document.createElement("div");
-        container.classList.add("image-container");
-        (c.moves || []).forEach(move => {
-          const box = document.createElement("div");
-          box.classList.add("image-box");
-          const img = document.createElement("img");
-          img.src = `images/${currentChar}/${move}.png`;
-          img.alt = move;
-          box.appendChild(img);
-          container.appendChild(box);
-        });
+      const movesContainer = document.createElement("div");
+      movesContainer.className = "moves-container";
 
-        rowDiv.appendChild(container);
-        comboArea.appendChild(rowDiv);
+      r.moves.forEach(mv => {
+        const img = document.createElement("img");
+        img.src = `images/sagat/${mv}.png`;
+        img.alt = mv;
+        movesContainer.appendChild(img);
       });
-    }
-  </script>
+
+      card.appendChild(movesContainer);
+      comboDisplay.appendChild(card);
+    });
+  } else {
+    comboDisplay.innerHTML = "<p>おすすめコンボがまだ登録されていません。</p>";
+  }
+});
+</script>
+
 </body>
 </html>
