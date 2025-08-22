@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>春麗おすすめコンボ</title>
+<style>
+body { 
+  font-family: Arial, sans-serif; 
+  padding: 20px; 
+  background: #f9f9f9; 
+}
+h2 { 
+  text-align: center; 
+  margin-bottom: 30px; 
+}
+
+/* 戻るボタン */
+.back-buttons { 
+  margin-bottom: 20px; 
+  text-align: center; 
+}
+.back-buttons button {
+  margin: 0 5px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  background: #888; /* 灰色固定 */
+  color: #fff;
+  cursor: pointer;
+}
+
+/* カード風 */
+.combo-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* タイトル */
+.combo-title { 
+  font-weight: bold; 
+  font-size: 18px; 
+  margin-bottom: 12px; 
+  text-align: center;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+/* 技画像コンテナ */
+.moves-container { 
+  display: flex; 
+  gap: 12px; 
+  overflow-x: auto; 
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch; /* スムーズスクロール */
+}
+
+.moves-container img { 
+  flex: 0 0 auto; /* 横並び固定 */
+  width: 100px; 
+  height: 100px; 
+  object-fit: contain; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  background: #f0f0f0; 
+  padding: 6px; 
+}
+
+/* スマホ向け微調整 */
+@media (max-width: 480px) {
+  .combo-title { font-size: 16px; }
+  .moves-container img { width: 75px; height: 75px; }
+}
+</style>
+</head>
+<body>
+
+<h2>春麗おすすめコンボ</h2>
+
+<div class="back-buttons">
+  <button onclick="location.href='index.html'">🏠 トップへ戻る</button>
+  <button onclick="location.href='chunli.html'">✏️ コンボ管理ページへ戻る</button>
+</div>
+
+<div id="combo-display"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+// Firebase 設定
+const firebaseConfig = {
+  apiKey: "AIzaSyAD4fyc-1VlEEGGO631hhpZqCOqllrQ3og",
+  authDomain: "st6-combo-maker.firebaseapp.com",
+  projectId: "st6-combo-maker",
+  storageBucket: "st6-combo-maker.firebasestorage.app",
+  messagingSenderId: "945906359459",
+  appId: "1:945906359459:web:59a955b609426cf2893316",
+  measurementId: "G-YVFY7H6N9E"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const comboDisplay = document.getElementById("combo-display");
+
+// 春麗用ドキュメント
+const docRef = doc(db, "combos", "春麗");
+
+// リアルタイム取得
+onSnapshot(docRef, (docSnap) => {
+  comboDisplay.innerHTML = "";
+  if (docSnap.exists()) {
+    const rows = docSnap.data().rows || [];
+    rows.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "combo-card";
+
+      const title = document.createElement("div");
+      title.className = "combo-title";
+      title.textContent = r.title;
+      card.appendChild(title);
+
+      const movesContainer = document.createElement("div");
+      movesContainer.className = "moves-container";
+
+      r.moves.forEach(mv => {
+        const img = document.createElement("img");
+        img.src = `images/chunli/${mv}.png`;
+        img.alt = mv;
+        movesContainer.appendChild(img);
+      });
+
+      card.appendChild(movesContainer);
+      comboDisplay.appendChild(card);
+    });
+  } else {
+    comboDisplay.innerHTML = "<p>おすすめコンボがまだ登録されていません。</p>";
+  }
+});
+</script>
+
+</body>
+</html>
