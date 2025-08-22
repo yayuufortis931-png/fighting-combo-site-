@@ -4,11 +4,21 @@
 <meta charset="UTF-8">
 <title>サガットおすすめコンボ</title>
 <style>
-body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-h2 { text-align: center; margin-bottom: 30px; }
+body { 
+  font-family: Arial, sans-serif; 
+  padding: 20px; 
+  background: #f9f9f9; 
+}
+h2 { 
+  text-align: center; 
+  margin-bottom: 30px; 
+}
 
 /* 戻るボタン */
-.back-buttons { margin-bottom: 20px; text-align: center; }
+.back-buttons { 
+  margin-bottom: 20px; 
+  text-align: center; 
+}
 .back-buttons button {
   margin: 0 5px;
   padding: 6px 12px;
@@ -23,8 +33,8 @@ h2 { text-align: center; margin-bottom: 30px; }
 .combo-card {
   background: white;
   border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 20px;
+  padding: 20px;
+  margin-bottom: 25px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
@@ -32,7 +42,8 @@ h2 { text-align: center; margin-bottom: 30px; }
 .combo-title { 
   font-weight: bold; 
   font-size: 18px; 
-  margin-bottom: 10px; 
+  margin-bottom: 12px; 
+  text-align: center;
   white-space: nowrap; 
   overflow: hidden; 
   text-overflow: ellipsis;
@@ -41,27 +52,27 @@ h2 { text-align: center; margin-bottom: 30px; }
 /* 技画像コンテナ */
 .moves-container { 
   display: flex; 
-  gap: 10px; 
+  gap: 12px; 
   overflow-x: auto; 
-  padding-bottom: 5px;
+  padding-bottom: 8px;
   -webkit-overflow-scrolling: touch; /* スムーズスクロール */
 }
 
 .moves-container img { 
   flex: 0 0 auto; /* 横並び固定 */
-  width: 80px; 
-  height: 80px; 
+  width: 100px; 
+  height: 100px; 
   object-fit: contain; 
   border: 1px solid #ddd; 
   border-radius: 8px; 
   background: #f0f0f0; 
-  padding: 5px; 
+  padding: 6px; 
 }
 
 /* スマホ向け微調整 */
 @media (max-width: 480px) {
   .combo-title { font-size: 16px; }
-  .moves-container img { width: 60px; height: 60px; }
+  .moves-container img { width: 75px; height: 75px; }
 }
 </style>
 </head>
