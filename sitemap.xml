@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://username.github.io/</loc>
+    <lastmod>2025-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://username.github.io/luke.html</loc>
+    <lastmod>2025-08-24</lastmod>
+  </url>
+  <url>
+    <loc>https://username.github.io/jamie.html</loc>
+    <lastmod>2025-08-24</lastmod>
+  </url>
+  <url>
+    <loc>https://username.github.io/manon.html</loc>
+    <lastmod>2025-08-24</lastmod>
+  </url>
+  <!-- 以下、他のキャラページも同じ形式で追加 -->
+  
+</urlset>
