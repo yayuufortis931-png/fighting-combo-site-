@@ -62,13 +62,15 @@ let currentChar = characters[0];
 let imageMap = {};
 
 // キャラ名→英語フォルダ
-const charFolderMap = {"ルーク": "luke","ジェイミー": "jamie","マノン": "manon","キンバリー": "kimberly","マリーザ": "marisa","リリー": "lily","JP": "jp",
+const charFolderMap = {
+  "ルーク": "luke","ジェイミー": "jamie","マノン": "manon","キンバリー": "kimberly","マリーザ": "marisa","リリー": "lily","JP": "jp",
   "ジュリ": "juri","DJ": "dj","キャミィ": "cammy","リュウ": "ryu","本田": "honda","ブランカ": "blanka","ガイル": "guile","ケン": "ken","春麗": "chunli",
   "ザンギエフ": "zangief","ダルシム": "dhalsim","ラシード": "rashid","AKI": "aki","エド": "ed","豪鬼": "gouki","ベガ": "vega","テリー": "terry",
-  "舞": "mai","エレナ": "elena","サガット": "sagat","ヴァイパー": "viper","アレックス": "alex","イングリッド": "ingrid"};
+  "舞": "mai","エレナ": "elena","サガット": "sagat","ヴァイパー": "viper","アレックス": "alex","イングリッド": "ingrid"
+};
 
-// 技リスト例（ここでは一部省略してますが必要に応じて埋める）
-  moveListMap["サガット"] = ["5弱P","2弱P","5弱K","6弱K","2弱K",
+// ====== 技リスト（省略、一部例のみ） ======
+   moveListMap["サガット"] = ["5弱P","2弱P","5弱K","6弱K","2弱K",
   "5中P","6中P","2中P","5中K","2中K",
   "5強P","4強P","2強P","5強K","5強K(1段目)","6強K","2強K",
   "2中P2強P","2中P2強K","5中K5強K","5中P5強K",
@@ -164,6 +166,8 @@ moveListMap["エレナ"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻�
 moveListMap["ヴァイパー"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["アレックス"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["イングリッド"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
+
+
 // キャラ選択肢追加
 characters.forEach(c=>{
   const o=document.createElement("option");
@@ -248,38 +252,12 @@ function addRow(savedData=null){
   addRowDragAndDrop(rowDiv);
 }
 
-// ====== 複製（直下に追加） ======
+// ====== 複製 ======
 function duplicateRow(row){
   const title=row.querySelector(".row-title").value+"_コピー";
   const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
-  const newRow=createRowElement({title,moves});
-  row.parentNode.insertBefore(newRow, row.nextSibling); // 直下に挿入
-}
-
-// ====== 段生成専用 ======
-function createRowElement(savedData){
-  rowCount++;
-  const rowDiv=document.createElement("div"); rowDiv.classList.add("combo-row"); rowDiv.draggable=true;
-
-  const header=document.createElement("div"); header.classList.add("row-header");
-  const titleInput=document.createElement("input"); titleInput.type="text"; titleInput.value=savedData?.title||`コンボ${rowCount}`; titleInput.classList.add("row-title");
-  const deleteBtn=document.createElement("button"); deleteBtn.textContent="×段削除"; deleteBtn.classList.add("row-delete-btn"); deleteBtn.addEventListener("click",()=>rowDiv.remove());
-  const duplicateBtn=document.createElement("button"); duplicateBtn.textContent="複製"; duplicateBtn.classList.add("row-duplicate-btn"); duplicateBtn.addEventListener("click",()=>duplicateRow(rowDiv));
-  header.append(titleInput,deleteBtn,duplicateBtn);
-
-  const controls=document.createElement("div"); controls.classList.add("controls");
-  const select=document.createElement("select");
-  const defaultOption=document.createElement("option"); defaultOption.value=""; defaultOption.textContent="技を選択してください"; select.appendChild(defaultOption);
-  (moveListMap[currentChar] || []).forEach(move=>{ const o=document.createElement("option"); o.value=move; o.textContent=move; select.appendChild(o); });
-  const addBtn=document.createElement("button"); addBtn.textContent="追加"; controls.append(select,addBtn);
-
-  const container=document.createElement("div"); container.classList.add("image-container");
-  addBtn.addEventListener("click",()=>{ const move=select.value; if(move && imageMap[move]) addImageBox(container,move); });
-  if(savedData?.moves) savedData.moves.forEach(m=>addImageBox(container,m));
-
-  rowDiv.append(header,controls,container);
-  addRowDragAndDrop(rowDiv);
-  return rowDiv;
+  const newRow=addRow({title,moves});
+  row.after(newRow);
 }
 
 // 画像ボックス追加
@@ -291,43 +269,75 @@ function addImageBox(container,move){
   addImageDragAndDrop(box,container);
 }
 
-// ====== 画像ドラッグ ======
+// ====== 画像ドラッグ（ガイドバー方式） ======
 function addImageDragAndDrop(element,container){
+  let guide;
   element.addEventListener("dragstart",(e)=>{
     e.dataTransfer.setData("text/plain","");
     element.classList.add("dragging");
-    const guide=document.createElement("div"); guide.classList.add("drag-guide"); container.appendChild(guide); container.dragGuide=guide;
+    guide=document.createElement("div"); guide.classList.add("drag-guide"); container.appendChild(guide);
   });
-  element.addEventListener("dragend",()=>{ element.classList.remove("dragging"); if(container.dragGuide) container.dragGuide.style.display="none"; });
+  element.addEventListener("dragend",()=>{
+    element.classList.remove("dragging");
+    if(guide){ 
+      const after=getDragAfterElement(container,e.clientX);
+      if(after) container.insertBefore(element,after);
+      else container.appendChild(element);
+      guide.remove();
+    }
+  });
   container.addEventListener("dragover",(e)=>{
     e.preventDefault();
-    const dragging=container.querySelector(".dragging");
     const after=getDragAfterElement(container,e.clientX);
-    const guide=container.dragGuide;
-    if(after==null){ container.appendChild(dragging); if(guide) guide.style.display="none"; }
-    else{ container.insertBefore(dragging,after); if(guide){ guide.style.display="block"; guide.style.left=after.offsetLeft+"px"; guide.style.height=container.offsetHeight+"px"; } }
+    if(guide){
+      guide.style.display="block";
+      guide.style.left= after ? after.offsetLeft+"px" : (container.offsetWidth-4)+"px";
+    }
   });
 }
-function getDragAfterElement(container,x){ return [...container.querySelectorAll(".image-box:not(.dragging)")].find(el=>x < el.getBoundingClientRect().left+el.getBoundingClientRect().width/2); }
+function getDragAfterElement(container,x){
+  const elements=[...container.querySelectorAll(".image-box:not(.dragging)")];
+  return elements.find(el=>x<el.getBoundingClientRect().left+el.getBoundingClientRect().width/2);
+}
 
-// ====== 段ドラッグ ======
+// ====== 段ドラッグ（改善版） ======
 function addRowDragAndDrop(row){
+  let guide;
+  // 入力中はドラッグ禁止
+  row.querySelectorAll("input, textarea").forEach(el=>{
+    el.addEventListener("mousedown",()=>{ row.draggable=false; });
+    el.addEventListener("mouseup",()=>{ row.draggable=true; });
+  });
+
+  let lastY=0;
   row.addEventListener("dragstart",(e)=>{
     e.dataTransfer.setData("text/plain","");
     row.classList.add("row-dragging");
-    const guide=document.createElement("div"); guide.classList.add("row-drag-guide"); comboArea.appendChild(guide); comboArea.rowDragGuide=guide;
+    guide=document.createElement("div"); guide.classList.add("row-drag-guide"); comboArea.appendChild(guide);
   });
-  row.addEventListener("dragend",()=>{ row.classList.remove("row-dragging"); if(comboArea.rowDragGuide) comboArea.rowDragGuide.style.display="none"; });
+  row.addEventListener("dragend",()=>{
+    row.classList.remove("row-dragging");
+    if(guide){ 
+      const after=getDragAfterRow(comboArea,lastY);
+      if(after) comboArea.insertBefore(row,after);
+      else comboArea.appendChild(row);
+      guide.remove();
+    }
+  });
   comboArea.addEventListener("dragover",(e)=>{
     e.preventDefault();
-    const dragging=comboArea.querySelector(".row-dragging");
-    const after=getDragAfterRow(comboArea,e.clientY);
-    const guide=comboArea.rowDragGuide;
-    if(dragging && after){ comboArea.insertBefore(dragging,after); if(guide){ guide.style.display="block"; guide.style.top=after.offsetTop+"px"; } }
-    else if(dragging){ comboArea.appendChild(dragging); if(guide) guide.style.display="none"; }
+    lastY=e.clientY;
+    const after=getDragAfterRow(comboArea,lastY);
+    if(guide){
+      guide.style.display="block";
+      guide.style.top= after ? after.getBoundingClientRect().top+"px" : comboArea.getBoundingClientRect().bottom+"px";
+    }
   });
 }
-function getDragAfterRow(container,y){ return [...container.querySelectorAll(".combo-row:not(.row-dragging)")].find(row=>y < row.getBoundingClientRect().top+row.getBoundingClientRect().height/2); }
+function getDragAfterRow(container,y){
+  const rows=[...container.querySelectorAll(".combo-row:not(.row-dragging)")];
+  return rows.find(r=>y<r.getBoundingClientRect().top+r.getBoundingClientRect().height/2);
+}
 
 // 初期ロード
 updateImageMap();

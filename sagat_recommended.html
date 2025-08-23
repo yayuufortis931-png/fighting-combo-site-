@@ -35,44 +35,44 @@ h2 {
   align-items: flex-start;
   gap: 12px; 
   margin-bottom: 25px;
+  flex-wrap: wrap; /* スマホでも折り返し */
 }
 
 /* コンボカード */
 .combo-card {
-  background: white;
+  background: #f0f0f0;       /* 管理ページの背景に合わせる */
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 15px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 /* タイトル */
 .combo-title { 
   font-weight: bold; 
-  font-size: 18px; 
-  margin-bottom: 12px; 
+  font-size: 16px; 
+  margin-bottom: 10px; 
   text-align: left;
+  padding: 5px 0;
 }
 
 /* 技画像コンテナ */
 .moves-container { 
   display: flex; 
   flex-wrap: wrap; 
-  gap: 12px; 
-  overflow-x: auto; 
-  padding-bottom: 8px;
+  gap: 10px; /* 管理ページに揃える */
 }
 
 .moves-container img { 
-  width: 100px; 
-  height: 100px; 
+  width: 120px; 
+  height: 120px; 
   object-fit: contain; 
-  border: 1px solid #ddd; 
+  border: none;      /* 余計な枠を削除 */
   border-radius: 8px; 
-  background: #f0f0f0; 
-  padding: 6px; 
+  background: #f9f9f9; 
+  padding: 0; 
 }
 
 /* サイドバナー */
@@ -161,8 +161,8 @@ const affiliateItems = [
   { link:"https://amzn.to/4ng309J", img:"https://m.media-amazon.com/images/I/71a0xYAmg0L._AC_SX679_.jpg", title:"Haute42 アケコン" },
   { link:"https://amzn.to/41h5CLP", img:"https://m.media-amazon.com/images/I/61T5L-yGdJL._AC_SX679_.jpg", title:"ファイティングスティックα" },
   { link:"https://amzn.to/463TZdK", img:"https://m.media-amazon.com/images/I/61ZkF5cY7zL._AC_SY450_.jpg", title:"Elgato Wave:3" },
-  { link:"https://amzn.to/3VcypNZ", img:"https://m.media-amazon.com/images/I/61euaIRYGXL._AC_SY300_SX300_QL70_ML2_.jpg", title:"HyperX QuadCast S" },
-  { link:"https://amzn.to/47JHeq7", img:"https://m.media-amazon.com/images/I/61uDYXfqtxL._AC_SX679_.jpg", title:"ロジクール MX MASTER3s" }
+  { link:"https://amzn.to/47JHeq7", img:"https://m.media-amazon.com/images/I/61uDYXfqtxL._AC_SX679_.jpg", title:"ロジクール MX MASTER3s" },
+  { link:"https://amzn.to/3VcypNZ", img:"https://m.media-amazon.com/images/I/61euaIRYGXL._AC_SY300_SX300_QL70_ML2_.jpg", title:"HyperX QuadCast S" }
 ];
 
 const amazonLogo = "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg";
@@ -211,7 +211,7 @@ onSnapshot(docRef, (docSnap) => {
       const sideImg = document.createElement("img");
       sideImg.src = item.img;
       sideImg.alt = item.title;
-      sideImg.style.maxHeight = card.offsetHeight - 40 + "px"; // タイトル・余白を差し引く
+      sideImg.style.maxHeight = card.offsetHeight - 40 + "px";
       sideLink.appendChild(sideImg);
 
       const sideTitle = document.createElement("div");
