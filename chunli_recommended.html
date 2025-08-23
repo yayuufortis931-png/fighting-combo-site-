@@ -24,18 +24,28 @@ h2 {
   padding: 6px 12px;
   border: none;
   border-radius: 5px;
-  background: #888; /* 灰色固定 */
+  background: #888;
   color: #fff;
   cursor: pointer;
 }
 
-/* カード風 */
+/* 横並びラッパー */
+.combo-row-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px; 
+  margin-bottom: 25px;
+}
+
+/* コンボカード */
 .combo-card {
   background: white;
   border-radius: 12px;
   padding: 20px;
-  margin-bottom: 25px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* タイトル */
@@ -43,23 +53,19 @@ h2 {
   font-weight: bold; 
   font-size: 18px; 
   margin-bottom: 12px; 
-  text-align: center;
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis;
+  text-align: left;
 }
 
 /* 技画像コンテナ */
 .moves-container { 
   display: flex; 
+  flex-wrap: wrap; 
   gap: 12px; 
   overflow-x: auto; 
   padding-bottom: 8px;
-  -webkit-overflow-scrolling: touch; /* スムーズスクロール */
 }
 
 .moves-container img { 
-  flex: 0 0 auto; /* 横並び固定 */
   width: 100px; 
   height: 100px; 
   object-fit: contain; 
@@ -69,10 +75,53 @@ h2 {
   padding: 6px; 
 }
 
-/* スマホ向け微調整 */
+/* サイドバナー */
+.side-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #000;
+  font-size: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 5px;
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.side-banner img {
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  margin-bottom: 5px;
+}
+
+/* Amazonロゴ */
+.amazon-logo {
+  width: 30px;
+  margin-top: 2px;
+}
+
+/* スマホ対応 */
 @media (max-width: 480px) {
-  .combo-title { font-size: 16px; }
-  .moves-container img { width: 75px; height: 75px; }
+  .combo-row-wrapper {
+    flex-direction: column;
+  }
+  .side-banner {
+    width: 60px;
+    font-size: 10px;
+    padding: 3px;
+  }
+  .side-banner img {
+    width: 60px;
+    height: auto;
+    margin-bottom: 2px;
+  }
+  .amazon-logo {
+    width: 25px;
+  }
 }
 </style>
 </head>
@@ -106,6 +155,18 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const comboDisplay = document.getElementById("combo-display");
 
+// サイドバナー用商品リスト
+const affiliateItems = [
+  { link:"https://amzn.to/45LDjGS", img:"https://m.media-amazon.com/images/I/71efVUNIBmL._AC_SL1500_.jpg", title:"BLITZ2" },
+  { link:"https://amzn.to/4ng309J", img:"https://m.media-amazon.com/images/I/71a0xYAmg0L._AC_SX679_.jpg", title:"Haute42 アケコン" },
+  { link:"https://amzn.to/41h5CLP", img:"https://m.media-amazon.com/images/I/61T5L-yGdJL._AC_SX679_.jpg", title:"ファイティングスティックα" },
+  { link:"https://amzn.to/463TZdK", img:"https://m.media-amazon.com/images/I/61ZkF5cY7zL._AC_SY450_.jpg", title:"Elgato Wave:3" },
+  { link:"https://amzn.to/3VcypNZ", img:"https://m.media-amazon.com/images/I/61euaIRYGXL._AC_SY300_SX300_QL70_ML2_.jpg", title:"HyperX QuadCast S" },
+  { link:"https://amzn.to/47JHeq7", img:"https://m.media-amazon.com/images/I/61uDYXfqtxL._AC_SX679_.jpg", title:"ロジクール MX MASTER3s" }
+];
+
+const amazonLogo = "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg";
+
 // 春麗用ドキュメント
 const docRef = doc(db, "combos", "春麗");
 
@@ -114,7 +175,11 @@ onSnapshot(docRef, (docSnap) => {
   comboDisplay.innerHTML = "";
   if (docSnap.exists()) {
     const rows = docSnap.data().rows || [];
-    rows.forEach(r => {
+    rows.forEach((r, index) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "combo-row-wrapper";
+
+      // コンボカード
       const card = document.createElement("div");
       card.className = "combo-card";
 
@@ -134,7 +199,31 @@ onSnapshot(docRef, (docSnap) => {
       });
 
       card.appendChild(movesContainer);
-      comboDisplay.appendChild(card);
+      wrapper.appendChild(card);
+
+      // サイドバナー
+      const item = affiliateItems[index % affiliateItems.length];
+      const sideLink = document.createElement("a");
+      sideLink.href = item.link;
+      sideLink.target = "_blank";
+      sideLink.className = "side-banner";
+
+      const sideImg = document.createElement("img");
+      sideImg.src = item.img;
+      sideImg.alt = item.title;
+      sideLink.appendChild(sideImg);
+
+      const sideTitle = document.createElement("div");
+      sideTitle.textContent = item.title;
+      sideLink.appendChild(sideTitle);
+
+      const logoImg = document.createElement("img");
+      logoImg.src = amazonLogo;
+      logoImg.className = "amazon-logo";
+      sideLink.appendChild(logoImg);
+
+      wrapper.appendChild(sideLink);
+      comboDisplay.appendChild(wrapper);
     });
   } else {
     comboDisplay.innerHTML = "<p>おすすめコンボがまだ登録されていません。</p>";
