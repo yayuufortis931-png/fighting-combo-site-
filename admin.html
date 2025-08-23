@@ -55,7 +55,7 @@ const comboArea = document.getElementById("combo-area");
 const addRowBtn = document.getElementById("add-row-btn");
 const saveFirestoreBtn = document.getElementById("save-firestore-btn");
 
-let characters = ["ルーク","ジェイミー","マノン","キンバリー","マリーザ","リリー","JP","ジュリ","DJ","キャミィ","リュウ","本田","ブランカ","ガイル","ケン","春麗","ザンギエフ","ダルシム","ラシード","AKI","エド","豪鬼","ベガ","テリー","舞","エレナ","サガット","ヴァイパー","アレックス","イングリッド"]; // 必要に応じて追加
+let characters = ["ルーク","ジェイミー","マノン","キンバリー","マリーザ","リリー","JP","ジュリ","DJ","キャミィ","リュウ","本田","ブランカ","ガイル","ケン","春麗","ザンギエフ","ダルシム","ラシード","AKI","エド","豪鬼","ベガ","テリー","舞","エレナ","サガット","ヴァイパー","アレックス","イングリッド"];
 let moveListMap = {};
 let rowCount = 0;
 let currentChar = characters[0];
@@ -67,8 +67,8 @@ const charFolderMap = {"ルーク": "luke","ジェイミー": "jamie","マノン
   "ザンギエフ": "zangief","ダルシム": "dhalsim","ラシード": "rashid","AKI": "aki","エド": "ed","豪鬼": "gouki","ベガ": "vega","テリー": "terry",
   "舞": "mai","エレナ": "elena","サガット": "sagat","ヴァイパー": "viper","アレックス": "alex","イングリッド": "ingrid"};
 
-// 技リスト例（必要に応じて追加可能）
-moveListMap["サガット"] = ["5弱P","2弱P","5弱K","6弱K","2弱K",
+// 技リスト例（ここでは一部省略してますが必要に応じて埋める）
+  moveListMap["サガット"] = ["5弱P","2弱P","5弱K","6弱K","2弱K",
   "5中P","6中P","2中P","5中K","2中K",
   "5強P","4強P","2強P","5強K","5強K(1段目)","6強K","2強K",
   "2中P2強P","2中P2強K","5中K5強K","5中P5強K",
@@ -114,7 +114,19 @@ moveListMap["JP"] = ["5弱P","2弱P","5弱K","2弱K",
   "J弱P","J中P","J強P","J弱K","J中K","J強K"];
 moveListMap["キャミィ"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["本田"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
-moveListMap["ブランカ"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
+moveListMap["ブランカ"] = ["5弱P","2弱P","5弱K","2弱K",
+      "5中P","6中P","2中P","5中K","4中K","6中K","2中K",
+      "5強P","6強P","2強P","5強K","2強K","3強K",
+      "エレクトリックサンダー","ODエレクトリックサンダー","バックステップローリング","ODバックステップローリング",
+      "弱ローリングアタック","中ローリングアタック","強ローリングアタック","ODローリングアタック",
+      "弱エリアルローリング","中エリアルローリング","強エリアルローリング","ODエリアルローリング",
+      "弱バーチカルローリング","中バーチカルローリング","強バーチカルローリング","ODバーチカルローリング",
+      "フィアーダウン","ワイルドリフト","レイドジャンプ",
+      "1P","2P","3P","4P","6P","7P","8P","9P",
+      "ブランカちゃん爆弾","ブランカちゃんHIT","サプライズフォワード","サプライズバック",
+      "SA1","SA2","SA3",
+      "ドライブラッシュ","ドライブインパクト","投げ","ディレイ","前ステップ",
+      "J弱P","J中P","J強P","J弱K","J中K","J強K","垂直J強P"];
 moveListMap["ガイル"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["ケン"] = ["5弱P","2弱P","5弱K","2弱K",
       "5中P","6中P","2中P","5中K","2中K",
@@ -128,7 +140,18 @@ moveListMap["ケン"] = ["5弱P","2弱P","5弱K","2弱K",
       "SA1","SA2","SA3",
       "ドライブラッシュ","ドライブインパクト","投げ","ジャンプ","前ステップ",
       "J弱P","J中P","J強P","J強P(2段目)","J弱K","J中K","J2中K","J強K","垂直J強K"];
-moveListMap["春麗"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
+moveListMap["春麗"] = ["5弱P","2弱P","5弱K","2弱K",
+      "5中P","6中P","2中P","5中K","2中K",
+      "5強P","4強P","3強P","2強P","5強K","6強K","2強K","3強K",
+      "弱気功拳","中気功拳","強気功拳","OD気功拳",
+      "弱百裂脚","中百裂脚","強百裂脚","OD百裂脚",
+      "弱スピニングバードキック","中スピニングバードキック","強スピニングバードキック","ODスピニングバードキック",
+      "弱覇山蹴","中覇山蹴","強覇山蹴","OD覇山蹴",
+      "弱天昇脚","中天昇脚","強天昇脚","OD天昇脚",
+      "構え弱P","構え中P","構え強P","構え弱K","構え中K","構え強K",
+      "SA1","SA2","SA3",
+      "ドライブラッシュ","ドライブインパクト","投げ","ジャンプ","前ステップ",
+      "J弱P","J中P","J強P","J強P(2段目)","J弱K","J中K","J2中K","J強K","垂直J強K"];
 moveListMap["ザンギエフ"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["ダルシム"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["ラシード"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
@@ -141,7 +164,6 @@ moveListMap["エレナ"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻�
 moveListMap["ヴァイパー"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["アレックス"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 moveListMap["イングリッド"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
-
 // キャラ選択肢追加
 characters.forEach(c=>{
   const o=document.createElement("option");
@@ -151,7 +173,6 @@ characters.forEach(c=>{
 
 // ====== Firestoreリアルタイム反映 ======
 let unsubscribe = null;
-
 function startRealtimeListener(char){
   if(unsubscribe) unsubscribe();
   const docRef = doc(db,"combos",char);
@@ -169,7 +190,7 @@ function startRealtimeListener(char){
 // ====== イメージマップ更新 ======
 function updateImageMap(){
   imageMap = {};
-  moveListMap[currentChar].forEach(move=>{
+  (moveListMap[currentChar] || []).forEach(move=>{
     const folder = charFolderMap[currentChar];
     imageMap[move] = `images/${folder}/${move}.png`;
   });
@@ -208,13 +229,14 @@ function addRow(savedData=null){
   const header=document.createElement("div"); header.classList.add("row-header");
   const titleInput=document.createElement("input"); titleInput.type="text"; titleInput.value=savedData?.title||`コンボ${rowCount}`; titleInput.classList.add("row-title");
   const deleteBtn=document.createElement("button"); deleteBtn.textContent="×段削除"; deleteBtn.classList.add("row-delete-btn"); deleteBtn.addEventListener("click",()=>rowDiv.remove());
-  const duplicateBtn=document.createElement("button"); duplicateBtn.textContent="複製"; duplicateBtn.classList.add("row-duplicate-btn"); duplicateBtn.addEventListener("click",()=>duplicateRow(rowDiv));
+  const duplicateBtn=document.createElement("button"); duplicateBtn.textContent="複製"; duplicateBtn.classList.add("row-duplicate-btn"); 
+  duplicateBtn.addEventListener("click",()=>duplicateRow(rowDiv));
   header.append(titleInput,deleteBtn,duplicateBtn);
 
   const controls=document.createElement("div"); controls.classList.add("controls");
   const select=document.createElement("select");
   const defaultOption=document.createElement("option"); defaultOption.value=""; defaultOption.textContent="技を選択してください"; select.appendChild(defaultOption);
-  moveListMap[currentChar].forEach(move=>{ const o=document.createElement("option"); o.value=move; o.textContent=move; select.appendChild(o); });
+  (moveListMap[currentChar] || []).forEach(move=>{ const o=document.createElement("option"); o.value=move; o.textContent=move; select.appendChild(o); });
   const addBtn=document.createElement("button"); addBtn.textContent="追加"; controls.append(select,addBtn);
 
   const container=document.createElement("div"); container.classList.add("image-container");
@@ -226,11 +248,38 @@ function addRow(savedData=null){
   addRowDragAndDrop(rowDiv);
 }
 
-// 複製
+// ====== 複製（直下に追加） ======
 function duplicateRow(row){
   const title=row.querySelector(".row-title").value+"_コピー";
   const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
-  addRow({title,moves});
+  const newRow=createRowElement({title,moves});
+  row.parentNode.insertBefore(newRow, row.nextSibling); // 直下に挿入
+}
+
+// ====== 段生成専用 ======
+function createRowElement(savedData){
+  rowCount++;
+  const rowDiv=document.createElement("div"); rowDiv.classList.add("combo-row"); rowDiv.draggable=true;
+
+  const header=document.createElement("div"); header.classList.add("row-header");
+  const titleInput=document.createElement("input"); titleInput.type="text"; titleInput.value=savedData?.title||`コンボ${rowCount}`; titleInput.classList.add("row-title");
+  const deleteBtn=document.createElement("button"); deleteBtn.textContent="×段削除"; deleteBtn.classList.add("row-delete-btn"); deleteBtn.addEventListener("click",()=>rowDiv.remove());
+  const duplicateBtn=document.createElement("button"); duplicateBtn.textContent="複製"; duplicateBtn.classList.add("row-duplicate-btn"); duplicateBtn.addEventListener("click",()=>duplicateRow(rowDiv));
+  header.append(titleInput,deleteBtn,duplicateBtn);
+
+  const controls=document.createElement("div"); controls.classList.add("controls");
+  const select=document.createElement("select");
+  const defaultOption=document.createElement("option"); defaultOption.value=""; defaultOption.textContent="技を選択してください"; select.appendChild(defaultOption);
+  (moveListMap[currentChar] || []).forEach(move=>{ const o=document.createElement("option"); o.value=move; o.textContent=move; select.appendChild(o); });
+  const addBtn=document.createElement("button"); addBtn.textContent="追加"; controls.append(select,addBtn);
+
+  const container=document.createElement("div"); container.classList.add("image-container");
+  addBtn.addEventListener("click",()=>{ const move=select.value; if(move && imageMap[move]) addImageBox(container,move); });
+  if(savedData?.moves) savedData.moves.forEach(m=>addImageBox(container,m));
+
+  rowDiv.append(header,controls,container);
+  addRowDragAndDrop(rowDiv);
+  return rowDiv;
 }
 
 // 画像ボックス追加
