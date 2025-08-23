@@ -1,25 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- トップページ -->
   <url>
-    <loc>https://username.github.io/</loc>
+    <loc>https://username.github.io/index.html</loc>
     <lastmod>2025-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <url>
-    <loc>https://username.github.io/luke.html</loc>
-    <lastmod>2025-08-24</lastmod>
-  </url>
-  <url>
-    <loc>https://username.github.io/jamie.html</loc>
-    <lastmod>2025-08-24</lastmod>
-  </url>
-  <url>
-    <loc>https://username.github.io/manon.html</loc>
-    <lastmod>2025-08-24</lastmod>
-  </url>
-  <!-- 以下、他のキャラページも同じ形式で追加 -->
-  
+  <!-- キャラページ -->
+  <url><loc>https://username.github.io/luke.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/jamie.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/manon.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/kimberly.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/marisa.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/lily.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/jp.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/juri.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/deejay.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/cammy.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/ryu.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/ehonda.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/blanka.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/guile.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/ken.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/chunli.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/zangief.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/dhalsim.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/rashid.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/aki.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/ed.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/gouki.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/vega.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/terry.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/mai.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/elena.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/sagat.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/viper.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/alex.html</loc><lastmod>2025-08-24</lastmod></url>
+  <url><loc>https://username.github.io/ingrid.html</loc><lastmod>2025-08-24</lastmod></url>
+
 </urlset>
