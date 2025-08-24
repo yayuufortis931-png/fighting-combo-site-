@@ -36,7 +36,6 @@ body { font-family: Arial, sans-serif; padding: 20px; }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-// Firebase初期化
 const firebaseConfig = {
   apiKey: "AIzaSyAD4fyc-1VlEEGGO631hhpZqCOqllrQ3og",
   authDomain: "st6-combo-maker.firebaseapp.com",
@@ -49,7 +48,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ====== DOM & データ ======
 const charSelect = document.getElementById("char-select");
 const comboArea = document.getElementById("combo-area");
 const addRowBtn = document.getElementById("add-row-btn");
@@ -61,7 +59,6 @@ let rowCount = 0;
 let currentChar = characters[0];
 let imageMap = {};
 
-// キャラ名→英語フォルダ
 const charFolderMap = {
   "ルーク": "luke","ジェイミー": "jamie","マノン": "manon","キンバリー": "kimberly","マリーザ": "marisa","リリー": "lily","JP": "jp",
   "ジュリ": "juri","DJ": "dj","キャミィ": "cammy","リュウ": "ryu","本田": "honda","ブランカ": "blanka","ガイル": "guile","ケン": "ken","春麗": "chunli",
@@ -69,7 +66,7 @@ const charFolderMap = {
   "舞": "mai","エレナ": "elena","サガット": "sagat","ヴァイパー": "viper","アレックス": "alex","イングリッド": "ingrid"
 };
 
-// ====== 技リスト（省略、一部例のみ） ======
+// ここに moveListMap を既存コード通りに追加（省略）
    moveListMap["サガット"] = ["5弱P","2弱P","5弱K","6弱K","2弱K",
   "5中P","6中P","2中P","5中K","2中K",
   "5強P","4強P","2強P","5強K","5強K(1段目)","6強K","2強K",
@@ -170,14 +167,12 @@ moveListMap["アレックス"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "�
 moveListMap["イングリッド"] = ["5弱P", "2弱P", "波動拳", "昇龍拳", "竜巻旋風脚"];
 
 
-// キャラ選択肢追加
 characters.forEach(c=>{
   const o=document.createElement("option");
   o.value=c; o.textContent=c;
   charSelect.appendChild(o);
 });
 
-// ====== Firestoreリアルタイム反映 ======
 let unsubscribe = null;
 function startRealtimeListener(char){
   if(unsubscribe) unsubscribe();
@@ -187,13 +182,10 @@ function startRealtimeListener(char){
       const data = docSnap.data().rows || [];
       comboArea.innerHTML=""; rowCount=0;
       data.forEach(r=>addRow(r));
-    } else {
-      comboArea.innerHTML=""; rowCount=0;
-    }
+    } else { comboArea.innerHTML=""; rowCount=0; }
   });
 }
 
-// ====== イメージマップ更新 ======
 function updateImageMap(){
   imageMap = {};
   (moveListMap[currentChar] || []).forEach(move=>{
@@ -202,24 +194,20 @@ function updateImageMap(){
   });
 }
 
-// ====== キャラ切替 ======
 charSelect.addEventListener("change",()=>{
   currentChar = charSelect.value;
   updateImageMap();
   startRealtimeListener(currentChar);
 });
 
-// ====== 段追加 ======
 addRowBtn.addEventListener("click",()=>addRow());
 
-// Firestore保存
 saveFirestoreBtn.addEventListener("click", async()=>{
   const data = getCurrentData();
   await setDoc(doc(db,"combos",currentChar), {rows:data});
   alert("Firestoreに保存しました");
 });
 
-// データ取得
 function getCurrentData(){
   return [...comboArea.querySelectorAll(".combo-row")].map(row=>{
     return {title: row.querySelector(".row-title").value,
@@ -227,7 +215,6 @@ function getCurrentData(){
   });
 }
 
-// ====== 段追加関数 ======
 function addRow(savedData=null){
   rowCount++;
   const rowDiv=document.createElement("div"); rowDiv.classList.add("combo-row"); rowDiv.draggable=true;
@@ -252,9 +239,9 @@ function addRow(savedData=null){
   rowDiv.append(header,controls,container);
   comboArea.appendChild(rowDiv);
   addRowDragAndDrop(rowDiv);
+  return rowDiv;
 }
 
-// ====== 複製 ======
 function duplicateRow(row){
   const title=row.querySelector(".row-title").value+"_コピー";
   const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
@@ -262,7 +249,6 @@ function duplicateRow(row){
   row.after(newRow);
 }
 
-// 画像ボックス追加
 function addImageBox(container,move){
   const box=document.createElement("div"); box.classList.add("image-box"); box.draggable=true;
   const img=document.createElement("img"); img.src=imageMap[move]; img.alt=move;
@@ -271,7 +257,6 @@ function addImageBox(container,move){
   addImageDragAndDrop(box,container);
 }
 
-// ====== 画像ドラッグ（ガイドバー方式） ======
 function addImageDragAndDrop(element,container){
   let guide;
   element.addEventListener("dragstart",(e)=>{
@@ -279,7 +264,7 @@ function addImageDragAndDrop(element,container){
     element.classList.add("dragging");
     guide=document.createElement("div"); guide.classList.add("drag-guide"); container.appendChild(guide);
   });
-  element.addEventListener("dragend",()=>{
+  element.addEventListener("dragend",(e)=>{
     element.classList.remove("dragging");
     if(guide){ 
       const after=getDragAfterElement(container,e.clientX);
@@ -302,10 +287,8 @@ function getDragAfterElement(container,x){
   return elements.find(el=>x<el.getBoundingClientRect().left+el.getBoundingClientRect().width/2);
 }
 
-// ====== 段ドラッグ（改善版） ======
 function addRowDragAndDrop(row){
   let guide;
-  // 入力中はドラッグ禁止
   row.querySelectorAll("input, textarea").forEach(el=>{
     el.addEventListener("mousedown",()=>{ row.draggable=false; });
     el.addEventListener("mouseup",()=>{ row.draggable=true; });
@@ -317,7 +300,7 @@ function addRowDragAndDrop(row){
     row.classList.add("row-dragging");
     guide=document.createElement("div"); guide.classList.add("row-drag-guide"); comboArea.appendChild(guide);
   });
-  row.addEventListener("dragend",()=>{
+  row.addEventListener("dragend",(e)=>{
     row.classList.remove("row-dragging");
     if(guide){ 
       const after=getDragAfterRow(comboArea,lastY);
@@ -341,7 +324,6 @@ function getDragAfterRow(container,y){
   return rows.find(r=>y<r.getBoundingClientRect().top+r.getBoundingClientRect().height/2);
 }
 
-// 初期ロード
 updateImageMap();
 startRealtimeListener(currentChar);
 </script>
