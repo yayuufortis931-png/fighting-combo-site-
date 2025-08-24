@@ -4,21 +4,34 @@
 <meta charset="UTF-8">
 <title>ブランカ コンボ管理</title>
 <style>
-body { font-family: Arial, sans-serif; padding: 20px; }
+body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
 #page-nav { margin-bottom: 20px; }
-#page-nav button { margin-right: 10px; padding: 5px 10px; }
-.combo-row { margin-bottom: 25px; padding: 10px; border: 2px solid #666; border-radius: 8px; background: #f0f0f0; position: relative; }
-.row-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
-.row-title { font-weight: bold; font-size: 16px; padding: 5px; flex: 1; }
-.row-delete-btn, .row-duplicate-btn { background: red; color: white; border: none; border-radius: 5px; padding: 4px 8px; cursor: pointer; flex-shrink: 0; }
-.row-duplicate-btn { background: orange; }
-.controls { margin: 10px 0; }
+#page-nav button, #add-page-btn, #save-btn, #back-main, #add-row-btn {
+  margin-right: 8px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer;
+  background: #666; color: white; transition: background 0.2s;
+}
+#page-nav button:hover, #add-page-btn:hover, #save-btn:hover, #back-main:hover, #add-row-btn:hover { background: #444; }
+#page-nav button[style*="bold"] { background: #333; }
+.combo-row {
+  margin-bottom: 20px; padding: 12px; border: 2px solid #666; border-radius: 8px;
+  background: #fff; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: grab;
+}
+.combo-row.placeholder {
+  border: 2px dashed #2196f3; background: #e0f0ff; min-height: 80px;
+}
+.row-header { display: flex; justify-content: flex-start; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.row-title { font-weight: bold; font-size: 15px; padding: 4px; flex: 1; }
+.action-btn { border: none; border-radius: 5px; padding: 4px 8px; cursor: pointer; color: white; font-size: 13px; }
+.delete { background: #e53935; }
+.duplicate { background: #ff9800; }
+.copy { background: #43a047; }
+.controls { margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; }
 .image-container { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
-.image-box { position: relative; width: 120px; height: 120px; border: 2px solid #ccc; border-radius: 8px; overflow: hidden; background: #f9f9f9; cursor: grab; }
-.image-box img { width: 120px; height: 120px; object-fit: contain; }
-.delete-btn { position: absolute; top: 5px; right: 5px; background: gray; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
-.drag-guide { width: 4px; background: #007bff; position: absolute; top:0; height:100%; z-index:1000; display:none; }
-.row-drag-guide { height: 4px; background: #ff6600; width: 100%; position: absolute; left:0; z-index:1000; display:none; }
+.image-box { position: relative; width: 100px; height: 100px; border: 1px solid #ccc; border-radius: 6px; overflow: hidden; background: #fafafa; }
+.image-box img { width: 100%; height: 100%; object-fit: contain; }
+.delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; }
+.combo-output { display: flex; align-items: center; gap: 6px; margin-top: 10px; background: #f9f9f9; padding: 6px 8px; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; font-size: 14px; }
+.combo-text { flex: 1; text-align: left; }
 </style>
 </head>
 <body>
@@ -39,13 +52,11 @@ const saveBtn = document.getElementById("save-btn");
 const backMainBtn = document.getElementById("back-main");
 const addRowBtn = document.getElementById("add-row-btn");
 
-const characterId = location.pathname.split("/").pop().replace(".html","");
-
 let pages = ["default","recommended"];
 let currentPage = pages[0];
 let rowCount = 0;
 
-// ====== ブランカ専用技リスト ======
+// ====== ブランカ技リスト ======
 const moveList = [
   "5弱P","2弱P","5弱K","2弱K",
       "5中P","6中P","2中P","5中K","4中K","6中K","2中K",
@@ -60,46 +71,18 @@ const moveList = [
       "SA1","SA2","SA3",
       "ドライブラッシュ","ドライブインパクト","投げ","ディレイ","前ステップ",
       "J弱P","J中P","J強P","J弱K","J中K","J強K","垂直J強P"
-];
+  ]; 
 
-const imageMap = {};
-moveList.forEach(move => { imageMap[move] = `images/${characterId}/${move}.png`; });
+const imageMap = {}; moveList.forEach(m=>imageMap[m]=`images/blanka/${m}.png`);
 
 // ====== ページ切替 ======
 function renderPageNav(){
   pageNav.innerHTML="";
   pages.forEach(p=>{
-    const btn=document.createElement("button");
-    btn.textContent=p;
-    btn.dataset.page=p;
-
-    if(p === "recommended"){
-      btn.addEventListener("click",()=>{ location.href = "blanka_recommended.html"; });
-    } else {
-      btn.addEventListener("click",()=>{
-        saveCurrentPage();
-        currentPage=p;
-        loadPage();
-        renderPageNav();
-      });
-    }
-
+    const btn=document.createElement("button"); btn.textContent=p;
+    if(p==="recommended") btn.addEventListener("click",()=>location.href="blanka_recommended.html");
+    else btn.addEventListener("click",()=>{ saveCurrentPage(); currentPage=p; loadPage(); renderPageNav(); });
     if(p===currentPage) btn.style.fontWeight="bold";
-
-    if(!["default","recommended"].includes(p)){
-      const delBtn=document.createElement("button");
-      delBtn.textContent="×";
-      delBtn.addEventListener("click",()=>{
-        if(!confirm(`ページ「${p}」を削除しますか？`)) return;
-        pages = pages.filter(pageName => pageName!==p);
-        localStorage.removeItem(`comboData_${characterId}_${p}`);
-        if(currentPage===p) currentPage="default";
-        loadPage();
-        renderPageNav();
-      });
-      pageNav.appendChild(delBtn);
-    }
-
     pageNav.appendChild(btn);
   });
 }
@@ -107,216 +90,205 @@ renderPageNav();
 
 // ====== ページ追加 ======
 addPageBtn.addEventListener("click",()=>{
-  let name=prompt("新しいページ名を入力");
-  if(!name) return;
+  const name=prompt("新しいページ名を入力"); if(!name) return;
   if(pages.includes(name)){ alert("すでに存在するページ名です"); return; }
-  pages.push(name);
-  currentPage=name;
-  loadPage();
-  renderPageNav();
+  pages.push(name); currentPage=name; loadPage(); renderPageNav();
 });
 
 // ====== 戻る ======
 backMainBtn.addEventListener("click",()=>location.href="index.html");
 
 // ====== 保存 ======
-saveBtn.addEventListener("click",()=>{
-  saveCurrentPage();
-  alert("保存しました！");
-});
-
+saveBtn.addEventListener("click",()=>{ saveCurrentPage(); alert("保存しました！"); });
 function saveCurrentPage(){
-  const data=[];
-  document.querySelectorAll(".combo-row").forEach(row=>{
-    const title=row.querySelector(".row-title").value;
-    const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
-    data.push({title,moves});
-  });
-  localStorage.setItem(`comboData_${characterId}_${currentPage}`,JSON.stringify(data));
+  const data=[...document.querySelectorAll(".combo-row")].map(row=>({
+      title: row.querySelector(".row-title").value,
+      moves: [...row.querySelectorAll(".image-box img")].map(img=>img.alt)
+  }));
+  localStorage.setItem(`comboData_blanka_${currentPage}`,JSON.stringify(data));
 }
 
 // ====== ページ読み込み ======
 function loadPage(){
-  comboArea.innerHTML="";
-  rowCount=0;
-  const data=JSON.parse(localStorage.getItem(`comboData_${characterId}_${currentPage}`)||"[]");
+  comboArea.innerHTML=""; rowCount=0;
+  const data=JSON.parse(localStorage.getItem(`comboData_blanka_${currentPage}`)||"[]");
   data.forEach(d=>addRow(d));
 }
+loadPage();
 
 // ====== 段追加 ======
 addRowBtn.addEventListener("click",()=>addRow());
-
 function addRow(savedData=null){
   rowCount++;
-  const rowDiv=document.createElement("div");
-  rowDiv.classList.add("combo-row");
+  const row=document.createElement("div"); row.className="combo-row"; row.draggable=true;
 
-  const header=document.createElement("div");
-  header.classList.add("row-header");
+  // header
+  const header=document.createElement("div"); header.className="row-header";
+  const title=document.createElement("input"); title.type="text"; title.value=savedData?.title||`コンボ${rowCount}`; title.className="row-title";
+  const del=makeBtn("削除","delete",()=>row.remove());
+  const dup=makeBtn("複製","duplicate",()=>duplicateRow(row));
+  header.append(title,del,dup);
+  row.appendChild(header);
 
-  const titleInput=document.createElement("input");
-  titleInput.type="text";
-  titleInput.value=savedData?.title||`コンボ${rowCount}`;
-  titleInput.classList.add("row-title");
-
-  const deleteBtn=document.createElement("button");
-  deleteBtn.textContent="×段削除";
-  deleteBtn.classList.add("row-delete-btn");
-  deleteBtn.addEventListener("click",()=>{ if(!confirm("この段を削除しますか？")) return; rowDiv.remove(); });
-
-  const duplicateBtn=document.createElement("button");
-  duplicateBtn.textContent="複製";
-  duplicateBtn.classList.add("row-duplicate-btn");
-  duplicateBtn.addEventListener("click",()=>duplicateRow(rowDiv));
-
-  header.appendChild(titleInput);
-  header.appendChild(deleteBtn);
-  header.appendChild(duplicateBtn);
-
-  const controls=document.createElement("div");
-  controls.classList.add("controls");
+  // controls
+  const controls=document.createElement("div"); controls.className="controls";
   const select=document.createElement("select");
-  const defaultOption=document.createElement("option");
-  defaultOption.value="";
-  defaultOption.textContent="技を選択してください";
-  select.appendChild(defaultOption);
-  moveList.forEach(move=>{ const o=document.createElement("option"); o.value=move; o.textContent=move; select.appendChild(o); });
-  const addBtn=document.createElement("button");
-  addBtn.textContent="追加";
-  controls.appendChild(select);
-  controls.appendChild(addBtn);
+  const def=document.createElement("option"); def.value=""; def.textContent="技を選択"; select.append(def);
+  moveList.forEach(m=>{ const o=document.createElement("option"); o.value=m; o.textContent=m; select.append(o); });
+  const addBtn=document.createElement("button"); addBtn.textContent="追加"; controls.append(select,addBtn);
+  row.appendChild(controls);
 
-  const container=document.createElement("div");
-  container.classList.add("image-container");
+  // image container
+  const container=document.createElement("div"); container.className="image-container";
+  row.appendChild(container);
 
-  addBtn.addEventListener("click",()=>{
-    const move=select.value;
-    if(move && imageMap[move]) addImageBox(container,move);
-  });
-  if(savedData?.moves) savedData.moves.forEach(m=>addImageBox(container,m));
+  // combo output
+  const output=document.createElement("div"); output.className="combo-output";
+  const text=document.createElement("div"); text.className="combo-text"; text.textContent=savedData?.moves?.join(" > ")||"";
+  const copy=makeBtn("コピー","copy",()=>navigator.clipboard.writeText(text.textContent));
+  output.append(text,copy);
+  row.appendChild(output);
 
-  rowDiv.appendChild(header);
-  rowDiv.appendChild(controls);
-  rowDiv.appendChild(container);
-  comboArea.appendChild(rowDiv);
+  // 初期画像
+  if(savedData?.moves) savedData.moves.forEach(m=>addImageBox(container,m,row));
 
-  addRowDragAndDrop(rowDiv);
+  // 追加ボタン
+  addBtn.addEventListener("click",()=>{ if(select.value) addImageBox(container,select.value,row); });
 
-  return rowDiv; // ★ 作った行を返す
+  // 段ドラッグ
+  addRowDragAndDrop(row);
+
+  comboArea.appendChild(row);
+  return row;
 }
 
 // ====== 複製 ======
 function duplicateRow(row){
   const title=row.querySelector(".row-title").value+"_コピー";
   const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
-  const newRow = addRow({title,moves});
-  row.after(newRow); // ★ 複製元のすぐ下に配置
+  const newRow=addRow({title,moves});
+  row.after(newRow);
 }
 
-// ====== 画像ボックス追加 ======
-function addImageBox(container,move){
-  const box=document.createElement("div");
-  box.classList.add("image-box");
-  box.draggable=true;
-
-  const img=document.createElement("img");
-  img.src=imageMap[move];
-  img.alt=move;
-
-  const delBtn=document.createElement("button");
-  delBtn.textContent="×";
-  delBtn.classList.add("delete-btn");
-  delBtn.addEventListener("click",()=>box.remove());
-
-  box.appendChild(img);
-  box.appendChild(delBtn);
-  container.appendChild(box);
-  addDragAndDrop(box,container);
+// ====== 汎用ボタン ======
+function makeBtn(label,type,fn){
+  const b=document.createElement("button");
+  b.textContent=label; b.className=`action-btn ${type}`; b.addEventListener("click",fn);
+  return b;
 }
 
-// ====== 画像横ドラッグ ======
-function addDragAndDrop(element,container){
-  element.addEventListener("dragstart",(e)=>{
-    e.dataTransfer.setData("text/plain","");
-    element.classList.add("dragging");
-    const guide = document.createElement("div");
-    guide.classList.add("drag-guide");
-    container.appendChild(guide);
-    container.dragGuide = guide;
-  });
+// ====== 画像追加 ======
+function addImageBox(container,move,row){
+  const box=document.createElement("div"); box.className="image-box";
+  const img=document.createElement("img"); img.src=imageMap[move]; img.alt=move;
+  const del=document.createElement("button"); del.textContent="×"; del.className="delete-btn";
+  del.addEventListener("click",()=>{ box.remove(); updateComboText(row); });
+  container.appendChild(box); box.appendChild(img); box.appendChild(del);
 
-  element.addEventListener("dragend",()=>{
-    element.classList.remove("dragging");
-    if(container.dragGuide) container.dragGuide.style.display="none";
-  });
+  addImageDragAndDrop(box,container,row);
+  updateComboText(row);
+}
 
-  container.addEventListener("dragover",(e)=>{
+// ====== 画像ドラッグ（ゴースト方式） ======
+function addImageDragAndDrop(element, container, row){
+  let ghost = null;
+  let offsetX = 0, offsetY = 0;
+
+  element.addEventListener("mousedown", e=>{
     e.preventDefault();
-    const dragging = container.querySelector(".dragging");
-    const after = getDragAfterElementHorizontal(container,e.clientX);
-    const guide = container.dragGuide;
-    if(after==null){
-      container.appendChild(dragging);
-      if(guide) guide.style.display="none";
-    } else {
-      container.insertBefore(dragging, after);
-      if(guide){ guide.style.display = "block"; guide.style.left = after.offsetLeft + "px"; guide.style.height = container.offsetHeight + "px"; }
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+
+    ghost = element.cloneNode(true);
+    ghost.style.position = "absolute";
+    ghost.style.pointerEvents = "none";
+    ghost.style.opacity = "0.6";
+    ghost.style.zIndex = 1000;
+    ghost.style.width = element.offsetWidth + "px";
+    ghost.style.height = element.offsetHeight + "px";
+    document.body.appendChild(ghost);
+    moveGhost(e.pageX, e.pageY);
+
+    element.style.visibility = "hidden";
+
+    function moveGhost(pageX, pageY){
+      ghost.style.left = pageX - offsetX + "px";
+      ghost.style.top = pageY - offsetY + "px";
     }
+
+    function onMouseMove(e){
+      moveGhost(e.pageX, e.pageY);
+    }
+
+    document.addEventListener("mousemove", onMouseMove);
+
+    document.addEventListener("mouseup", function onMouseUp(e){
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+
+      // ドロップ位置判定
+      const boxes = [...container.querySelectorAll(".image-box")].filter(b=>b!==element);
+      let inserted = false;
+      for(const b of boxes){
+        const rect = b.getBoundingClientRect();
+        if(e.clientX < rect.left + rect.width/2){
+          container.insertBefore(element, b);
+          inserted = true;
+          break;
+        }
+      }
+      if(!inserted) container.appendChild(element);
+
+      element.style.visibility = "visible";
+      ghost.remove();
+      ghost = null;
+      updateComboText(row);
+    });
   });
 }
 
-function getDragAfterElementHorizontal(container, x){
-  const elements = [...container.querySelectorAll(".image-box:not(.dragging)")];
-  return elements.find(el=>{
-    const rect = el.getBoundingClientRect();
-    return x < rect.left + rect.width/2;
-  });
-}
-
-// ====== 段上下ドラッグ ======
+// ====== 段ドラッグ ======
 function addRowDragAndDrop(row){
-  row.draggable = true;
-
-  row.addEventListener("dragstart", (e)=>{
-    e.dataTransfer.setData("text/plain","");
+  let placeholder = null;
+  row.addEventListener("dragstart", e=>{
     row.classList.add("row-dragging");
-    const guide = document.createElement("div");
-    guide.classList.add("row-drag-guide");
-    comboArea.appendChild(guide);
-    comboArea.rowDragGuide = guide;
+    placeholder = document.createElement("div");
+    placeholder.className="combo-row placeholder";
+    placeholder.style.height = row.offsetHeight + "px";
+    row.parentNode.insertBefore(placeholder, row.nextSibling);
+    row.style.opacity="0.4";
   });
 
-  row.addEventListener("dragend", ()=>{
+  row.addEventListener("dragend", e=>{
     row.classList.remove("row-dragging");
-    if(comboArea.rowDragGuide) comboArea.rowDragGuide.style.display="none";
-  });
-
-  comboArea.addEventListener("dragover",(e)=>{
-    e.preventDefault();
-    const dragging = comboArea.querySelector(".row-dragging");
-    const after = getDragAfterRow(comboArea, e.clientY);
-    const guide = comboArea.rowDragGuide;
-
-    if(dragging && after){
-      comboArea.insertBefore(dragging, after);
-      if(guide){ guide.style.display = "block"; guide.style.top = after.offsetTop + "px"; }
-    } else if(dragging){
-      comboArea.appendChild(dragging);
-      if(guide) guide.style.display="none";
+    row.style.opacity="1";
+    if(placeholder){
+      placeholder.parentNode.replaceChild(row, placeholder);
+      placeholder=null;
     }
   });
-}
 
-function getDragAfterRow(container, y){
-  const rows = [...container.querySelectorAll(".combo-row:not(.row-dragging)")];
-  return rows.find(row=>{
-    const rect = row.getBoundingClientRect();
-    return y < rect.top + rect.height/2;
+  comboArea.addEventListener("dragover", e=>{
+    e.preventDefault();
+    const dragging=document.querySelector(".row-dragging");
+    if(!dragging || !placeholder) return;
+    const after=getDragAfterRow(comboArea,e.clientY);
+    if(after) comboArea.insertBefore(placeholder, after);
+    else comboArea.appendChild(placeholder);
   });
 }
 
-// ====== 初回ロード ======
-loadPage();
+function getDragAfterRow(container,y){
+  const els=[...container.querySelectorAll(".combo-row:not(.row-dragging)")];
+  if(els.length===0) return null;
+  return els.find(el=>y<el.getBoundingClientRect().top + el.getBoundingClientRect().height/2);
+}
+
+// ====== コンボテキスト更新 ======
+function updateComboText(row){
+  const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
+  row.querySelector(".combo-text").textContent=moves.join(" > ");
+}
 </script>
 </body>
 </html>
