@@ -131,7 +131,7 @@ h2 {
 
 <div class="back-buttons">
   <button onclick="location.href='index.html'">🏠 トップへ戻る</button>
-  <button onclick="location.href='trrry.html'">✏️ コンボ管理ページへ戻る</button>
+  <button onclick="location.href='terry.html'">✏️ コンボ管理ページへ戻る</button>
 </div>
 
 <div id="combo-display"></div>
@@ -193,7 +193,7 @@ onSnapshot(docRef, (docSnap) => {
 
       r.moves.forEach(mv => {
         const img = document.createElement("img");
-        img.src = `images/trrry/${mv}.png`;
+        img.src = `images/terry/${mv}.png`;
         img.alt = mv;
         movesContainer.appendChild(img);
       });
@@ -234,4 +234,3 @@ onSnapshot(docRef, (docSnap) => {
 
 </body>
 </html>
-
