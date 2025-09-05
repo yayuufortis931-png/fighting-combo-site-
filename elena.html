@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>春麗 コンボ管理</title>
+<title>エレナ コンボ管理</title>
 <style>
 body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
 #page-nav { margin-bottom: 20px; }
@@ -63,7 +63,7 @@ body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
 </style>
 </head>
 <body>
-<h2>春麗 コンボ管理</h2>
+<h2>エレナ コンボ管理</h2>
 <div id="page-nav"></div>
 <button id="add-page-btn">＋ ページ追加</button>
 <button id="save-btn">💾 保存</button>
@@ -84,30 +84,33 @@ let pages = ["default","recommended"];
 let currentPage = pages[0];
 let rowCount = 0;
 
-// ====== 春麗技リスト ======
+// ====== エレナ技リスト ======
 const moveList = [
  "5弱P","2弱P","5弱K","2弱K",
-      "5中P","6中P","2中P","5中K","2中K",
-      "5強P","4強P","3強P","2強P","5強K","6強K","2強K","3強K",
-      "弱気功拳","中気功拳","強気功拳","OD気功拳",
-      "弱百裂脚","中百裂脚","強百裂脚","OD百裂脚",
-      "弱スピニングバードキック","中スピニングバードキック","強スピニングバードキック","ODスピニングバードキック",
-      "弱覇山蹴","中覇山蹴","強覇山蹴","OD覇山蹴",
-      "弱天昇脚","中天昇脚","強天昇脚","OD天昇脚",
-      "構え弱P","構え中P","構え強P","構え弱K","構え中K","構え強K",
-      "SA1","SA2","SA3",
-      "ドライブラッシュ","cDR","ドライブインパクト","投げ","ジャンプ","前ステップ","ディレイ",
-      "J弱P","J中P","J強P","J強P(2段目)","J弱K","J中K","J2中K","J強K","垂直J強K","ここまで1コンボ"
+  "5中P","6中P","2中P","5中K","2中K",
+  "5強P","6強P","2強P","5強K","4強K","2強K","3強K",
+  "5中P＞5中P","5中K＞5強K","2中K＞5強KP","6強P＞5強P＞5強P",
+  "弱ライノホーン","中ライノホーン","強ライノホーン","ODライノホーン",
+  "弱スクラッチホイール","中スクラッチホイール","強スクラッチホイール","ODスクラッチホイール",
+  "弱スピンサイズ","中スピンサイズ","強スピンサイズ","ODスピンサイズ",
+  "弱リンクシング","中リンクシング","強リンクシング","ODリンクシング",
+  "弱リンクスワール","中リンクスワール","強リンクスワール",
+  "レオパードスナップ","ハーベストサークル","マレットスマッシュ",
+  "強化レオパードスナップ","強化ハーベストサークル","強化マレットスマッシュ",
+  "弱ムーングライド","中ムーングライド","強ムーングライド","ODムーングライド","ムーングライド派生",
+  "SA1","SA2","SA3",
+  "ドライブラッシュ","cDR","ドライブインパクト","投げ","ジャンプ","前ステップ","ディレイ",
+  "J弱P","J中P","J強P","J弱K","J中K","J強K","ここまで1コンボ"
   ]; 
 
-const imageMap = {}; moveList.forEach(m=>imageMap[m]=`images/chunli/${m}.png`);
+const imageMap = {}; moveList.forEach(m=>imageMap[m]=`images/elena/${m}.png`);
 
 // ====== ページ切替 ======
 function renderPageNav(){
   pageNav.innerHTML="";
   pages.forEach(p=>{
     const btn=document.createElement("button"); btn.textContent=p;
-    if(p==="recommended") btn.addEventListener("click",()=>location.href="chunli_recommended.html");
+    if(p==="recommended") btn.addEventListener("click",()=>location.href="elena_recommended.html");
     else btn.addEventListener("click",()=>{ saveCurrentPage(); currentPage=p; loadPage(); renderPageNav(); });
     if(p===currentPage) btn.style.fontWeight="bold";
     pageNav.appendChild(btn);
@@ -132,13 +135,13 @@ function saveCurrentPage(){
       title: row.querySelector(".row-title").value,
       moves: [...row.querySelectorAll(".image-box img")].map(img=>img.alt)
   }));
-  localStorage.setItem(`comboData_chunli_${currentPage}`,JSON.stringify(data));
+  localStorage.setItem(`comboData_elena_${currentPage}`,JSON.stringify(data));
 }
 
 // ====== ページ読み込み ======
 function loadPage(){
   comboArea.innerHTML=""; rowCount=0;
-  const data=JSON.parse(localStorage.getItem(`comboData_chunli_${currentPage}`)||"[]");
+  const data=JSON.parse(localStorage.getItem(`comboData_elena_${currentPage}`)||"[]");
   data.forEach(d=>addRow(d));
 }
 loadPage();

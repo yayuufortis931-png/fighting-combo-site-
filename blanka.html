@@ -28,10 +28,38 @@ body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
 .controls { margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; }
 .image-container { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
 .image-box { position: relative; width: 100px; height: 100px; border: 1px solid #ccc; border-radius: 6px; overflow: hidden; background: #fafafa; }
-.image-box img { width: 100%; height: 100%; object-fit: contain; }
-.delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; }
+.image-box img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; z-index: 10; }
 .combo-output { display: flex; align-items: center; gap: 6px; margin-top: 10px; background: #f9f9f9; padding: 6px 8px; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; font-size: 14px; }
 .combo-text { flex: 1; text-align: left; }
+
+/* ====== スマホ用ボタン拡大 ====== */
+@media (max-width: 768px) {
+  #page-nav button,
+  #add-page-btn,
+  #save-btn,
+  #back-main,
+  #add-row-btn,
+  .action-btn {
+    padding: 12px 20px;
+    font-size: 18px;
+  }
+
+  .row-title {
+    font-size: 18px;
+    padding: 8px;
+  }
+
+  .image-box {
+    width: 120px;
+    height: 120px;
+  }
+
+  .combo-output {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+}
 </style>
 </head>
 <body>
@@ -58,10 +86,11 @@ let rowCount = 0;
 
 // ====== ブランカ技リスト ======
 const moveList = [
-  "5弱P","2弱P","5弱K","2弱K",
+ "5弱P","2弱P","5弱K","2弱K",
       "5中P","6中P","2中P","5中K","4中K","6中K","2中K",
-      "5強P","6強P","2強P","3強P","5強K","2強K",
-      "エレクトリックサンダー","ODエレクトリックサンダー","バックステップローリング","ODバックステップローリング",
+      "5強P","6強P","2強P","3強P","5強K","2強K","3強P",
+      "エレクトリックサンダー","ODエレクトリックサンダー",
+      "弱バックステップローリング","中バックステップローリング","強バックステップローリング","ODバックステップローリング",
       "弱ローリングアタック","中ローリングアタック","強ローリングアタック","ODローリングアタック",
       "弱エリアルローリング","中エリアルローリング","強エリアルローリング","ODエリアルローリング",
       "弱バーチカルローリング","中バーチカルローリング","強バーチカルローリング","ODバーチカルローリング",
@@ -69,8 +98,8 @@ const moveList = [
       "1P","2P","3P","4P","6P","7P","8P","9P",
       "ブランカちゃん爆弾","ブランカちゃんHIT","サプライズフォワード","サプライズバック",
       "SA1","SA2","SA3",
-      "ドライブラッシュ","ドライブインパクト","投げ","ディレイ","前ステップ",
-      "J弱P","J中P","J強P","J弱K","J中K","J強K","垂直J強P"
+      "ドライブラッシュ","cDR","ドライブインパクト","投げ","前ステップ","ディレイ",
+      "J弱P","J中P","J強P","J弱K","J中K","J強K","垂直J強P","ここまで1コンボ"
   ]; 
 
 const imageMap = {}; moveList.forEach(m=>imageMap[m]=`images/blanka/${m}.png`);
@@ -155,7 +184,7 @@ function addRow(savedData=null){
   // 追加ボタン
   addBtn.addEventListener("click",()=>{ if(select.value) addImageBox(container,select.value,row); });
 
-  // 段ドラッグ
+  // 段ドラッグ（PC限定）
   addRowDragAndDrop(row);
 
   comboArea.appendChild(row);
@@ -182,19 +211,29 @@ function addImageBox(container,move,row){
   const box=document.createElement("div"); box.className="image-box";
   const img=document.createElement("img"); img.src=imageMap[move]; img.alt=move;
   const del=document.createElement("button"); del.textContent="×"; del.className="delete-btn";
+
+  // 重要: 親のドラッグ開始を無効化して削除クリックを通す
+  del.addEventListener("mousedown", (e)=> { e.stopPropagation(); });
+
   del.addEventListener("click",()=>{ box.remove(); updateComboText(row); });
   container.appendChild(box); box.appendChild(img); box.appendChild(del);
 
+  // PC限定ドラッグ
   addImageDragAndDrop(box,container,row);
   updateComboText(row);
 }
 
-// ====== 画像ドラッグ（ゴースト方式） ======
+// ====== 画像ドラッグ（PCのみ） ======
 function addImageDragAndDrop(element, container, row){
+  if (/Mobi|Android/i.test(navigator.userAgent)) return; // スマホでは無効化
+
   let ghost = null;
   let offsetX = 0, offsetY = 0;
 
   element.addEventListener("mousedown", e=>{
+    // 重要: 削除ボタン上の操作はドラッグを開始しない
+    if (e.target.closest('.delete-btn')) return;
+
     e.preventDefault();
     offsetX = e.offsetX;
     offsetY = e.offsetY;
@@ -226,7 +265,6 @@ function addImageDragAndDrop(element, container, row){
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
 
-      // ドロップ位置判定
       const boxes = [...container.querySelectorAll(".image-box")].filter(b=>b!==element);
       let inserted = false;
       for(const b of boxes){
@@ -240,15 +278,17 @@ function addImageDragAndDrop(element, container, row){
       if(!inserted) container.appendChild(element);
 
       element.style.visibility = "visible";
-      ghost.remove();
+      if (ghost) ghost.remove();
       ghost = null;
       updateComboText(row);
     });
   });
 }
 
-// ====== 段ドラッグ ======
+// ====== 段ドラッグ（PCのみ） ======
 function addRowDragAndDrop(row){
+  if (/Mobi|Android/i.test(navigator.userAgent)) return; // スマホでは無効化
+
   let placeholder = null;
   row.addEventListener("dragstart", e=>{
     row.classList.add("row-dragging");
