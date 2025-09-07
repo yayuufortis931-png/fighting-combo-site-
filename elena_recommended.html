@@ -140,7 +140,7 @@ h2 {
 
 <div class="back-buttons">
   <button onclick="location.href='index.html'">🏠 トップへ戻る</button>
-  <button onclick="location.href='エレナ.html'">✏️ コンボ管理ページへ戻る</button>
+  <button onclick="location.href='elena.html'">✏️ コンボ管理ページへ戻る</button>
 </div>
 
 <div id="combo-display"></div>
@@ -202,7 +202,7 @@ onSnapshot(docRef, (docSnap) => {
 
       r.moves.forEach(mv => {
         const img = document.createElement("img");
-        img.src = `images/エレナ/${mv}.png`;
+        img.src = `images/elena/${mv}.png`;
         img.alt = mv;
         movesContainer.appendChild(img);
       });
