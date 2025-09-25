@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>スト6 コンボメーカー - お問い合わせ</title>
+  <link rel="canonical" href="https://yayuufortis931-png.github.io/fighting-combo-site-/contact.html">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #3e0a8a, #5c0fb8, #9c23b8);
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      color: #fff;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 30px;
+    }
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+    }
+    label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="email"], textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      margin-top: 5px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    #privacy {
+      max-width: 600px;
+      margin: 30px auto 0 auto;
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+      font-size: 0.9em;
+      line-height: 1.4em;
+    }
+    a.back-link {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>スト6 コンボメーカー</h1>
+  <h2>お問い合わせフォーム</h2>
+
+  <!-- フォーム（送信後 thanks.html に飛ぶ） -->
+  <form action="thanks.html" method="POST">
+    <label>お名前
+      <input type="text" name="name" required>
+    </label>
+
+    <label>メールアドレス
+      <input type="email" name="email" required>
+    </label>
+
+    <label>お問い合わせ内容
+      <textarea name="message" rows="6" required></textarea>
+    </label>
+
+    <button type="submit">送信</button>
+  </form>
+
+  <div id="privacy">
+    <h2>プライバシーポリシー</h2>
+    <p>当サイトでは、お問い合わせフォームを通じて取得した個人情報（お名前・メールアドレス・お問い合わせ内容）は、回答のためのみに使用し、他の目的で利用することはありません。</p>
+    <p>外部サービス（Google AdSense, Firebase など）を利用する場合がありますが、個人情報はこれらのサービスに渡されません。</p>
+  </div>
+
+  <a href="index.html" class="back-link">トップページに戻る</a>
+
+</body>
+</html>
