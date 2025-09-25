@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <!-- Google Analytics (GA4) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YVFY7H6N9E"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-YVFY7H6N9E');
-</script>
-
 <meta charset="UTF-8">
 <title>ジュリおすすめコンボ</title>
 <style>
@@ -17,10 +8,7 @@ body {
   font-family: Arial, sans-serif; 
   padding: 20px; 
   background: #f9f9f9; 
-}
-h2 { 
-  text-align: center; 
-  margin-bottom: 30px; 
+  margin: 0;
 }
 
 /* 戻るボタン */
@@ -38,7 +26,7 @@ h2 {
   cursor: pointer;
 }
 
-/* 横並びラッパー */
+/* コンボ表示 */
 .combo-row-wrapper {
   display: flex;
   align-items: flex-start;
@@ -46,10 +34,8 @@ h2 {
   margin-bottom: 25px;
   flex-wrap: wrap; /* スマホでも折り返し */
 }
-
-/* コンボカード */
 .combo-card {
-  background: #f0f0f0;       /* 管理ページの背景に合わせる */
+  background: #f0f0f0;
   border-radius: 12px;
   padding: 15px;
   flex: 1;
@@ -57,85 +43,53 @@ h2 {
   flex-direction: column;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-
-/* タイトル */
 .combo-title { 
   font-weight: bold; 
   font-size: 16px; 
   margin-bottom: 10px; 
-  text-align: left;
-  padding: 5px 0;
 }
-
-/* 技画像コンテナ */
 .moves-container { 
   display: flex; 
   flex-wrap: wrap; 
-  gap: 10px; /* 管理ページに揃える */
+  gap: 10px;
 }
-
 .moves-container img { 
   width: 120px; 
   height: 120px; 
   object-fit: contain; 
-  border: none;      /* 余計な枠を削除 */
   border-radius: 8px; 
   background: #f9f9f9; 
-  padding: 0; 
-}
-
-/* サイドバナー */
-.side-banner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: #000;
-  font-size: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 5px;
-  width: 100px;
-  flex-shrink: 0;
-}
-
-.side-banner img {
-  width: auto;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  margin-bottom: 5px;
-}
-
-/* Amazonロゴ */
-.amazon-logo {
-  width: 30px;
-  margin-top: 2px;
 }
 
 /* スマホ対応 */
 @media (max-width: 480px) {
-  .combo-row-wrapper {
-    flex-direction: column;
-  }
-  .side-banner {
-    width: 60px;
-    font-size: 10px;
-    padding: 3px;
-  }
-  .side-banner img {
-    width: 60px;
-    height: auto;
-    margin-bottom: 2px;
-  }
-  .amazon-logo {
-    width: 25px;
-  }
+  .combo-row-wrapper { flex-direction: column; }
 }
 </style>
 </head>
 <body>
 
+<!-- ページ上部広告（ページマッチ） -->
+<div id="ad-top">
+<script type="text/javascript">
+rakuten_design="slide";
+rakuten_affiliateId="1e419771.05d3cae2.1e419772.c9642a45";
+rakuten_items="ctsmatch";
+rakuten_genreId="0";
+rakuten_size="728x90";
+rakuten_target="_blank";
+rakuten_theme="gray";
+rakuten_border="off";
+rakuten_auto_mode="on";
+rakuten_genre_title="off";
+rakuten_recommend="on";
+rakuten_ts="1758815505294";
+</script>
+<script type="text/javascript" src="https://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js?20230106"></script>
+</div>
+
+<!-- ページ内容 -->
+<div id="main-content">
 <h2>ジュリおすすめコンボ</h2>
 
 <div class="back-buttons">
@@ -144,6 +98,26 @@ h2 {
 </div>
 
 <div id="combo-display"></div>
+</div>
+
+<!-- ページ下部広告（ランキング） -->
+<div id="ad-bottom">
+<script type="text/javascript">
+rakuten_design="slide";
+rakuten_affiliateId="1e419771.05d3cae2.1e419772.c9642a45";
+rakuten_items="ranking";
+rakuten_genreId="0";
+rakuten_size="728x90";
+rakuten_target="_blank";
+rakuten_theme="gray";
+rakuten_border="off";
+rakuten_auto_mode="on";
+rakuten_genre_title="off";
+rakuten_recommend="on";
+rakuten_ts="1758815521296";
+</script>
+<script type="text/javascript" src="https://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js?20230106"></script>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
@@ -164,18 +138,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const comboDisplay = document.getElementById("combo-display");
 
-// サイドバナー用商品リスト
-const affiliateItems = [
-  { link:"https://amzn.to/45LDjGS", img:"https://m.media-amazon.com/images/I/71efVUNIBmL._AC_SL1500_.jpg", title:"BLITZ2" },
-  { link:"https://amzn.to/4ng309J", img:"https://m.media-amazon.com/images/I/71a0xYAmg0L._AC_SX679_.jpg", title:"Haute42 アケコン" },
-  { link:"https://amzn.to/41h5CLP", img:"https://m.media-amazon.com/images/I/61T5L-yGdJL._AC_SX679_.jpg", title:"ファイティングスティックα" },
-  { link:"https://amzn.to/463TZdK", img:"https://m.media-amazon.com/images/I/61ZkF5cY7zL._AC_SY450_.jpg", title:"Elgato Wave:3" },
-  { link:"https://amzn.to/47JHeq7", img:"https://m.media-amazon.com/images/I/61uDYXfqtxL._AC_SX679_.jpg", title:"ロジクール MX MASTER3s" },
-  { link:"https://amzn.to/3VcypNZ", img:"https://m.media-amazon.com/images/I/61euaIRYGXL._AC_SY300_SX300_QL70_ML2_.jpg", title:"HyperX QuadCast S" }
-];
-
-const amazonLogo = "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg";
-
 // ジュリ用ドキュメント
 const docRef = doc(db, "combos", "ジュリ");
 
@@ -184,7 +146,7 @@ onSnapshot(docRef, (docSnap) => {
   comboDisplay.innerHTML = "";
   if (docSnap.exists()) {
     const rows = docSnap.data().rows || [];
-    rows.forEach((r, index) => {
+    rows.forEach((r) => {
       const wrapper = document.createElement("div");
       wrapper.className = "combo-row-wrapper";
 
@@ -210,29 +172,6 @@ onSnapshot(docRef, (docSnap) => {
       card.appendChild(movesContainer);
       wrapper.appendChild(card);
 
-      // サイドバナー（1つだけ、カードの高さを超えないように）
-      const item = affiliateItems[index % affiliateItems.length];
-      const sideLink = document.createElement("a");
-      sideLink.href = item.link;
-      sideLink.target = "_blank";
-      sideLink.className = "side-banner";
-
-      const sideImg = document.createElement("img");
-      sideImg.src = item.img;
-      sideImg.alt = item.title;
-      sideImg.style.maxHeight = card.offsetHeight - 40 + "px";
-      sideLink.appendChild(sideImg);
-
-      const sideTitle = document.createElement("div");
-      sideTitle.textContent = item.title;
-      sideLink.appendChild(sideTitle);
-
-      const logoImg = document.createElement("img");
-      logoImg.src = amazonLogo;
-      logoImg.className = "amazon-logo";
-      sideLink.appendChild(logoImg);
-
-      wrapper.appendChild(sideLink);
       comboDisplay.appendChild(wrapper);
     });
   } else {
