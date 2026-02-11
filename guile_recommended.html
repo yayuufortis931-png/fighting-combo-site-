@@ -1,34 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <title>スト6 コンボメーカー</title>
+  <meta charset="UTF-8">
+  <title>ガイルおすすめコンボ</title>
+
   <link rel="canonical" href="https://yayuufortis931-png.github.io/fighting-combo-site-/">
 
-  <!-- Google Search Console 所有権確認用 -->
   <meta name="google-site-verification" content="xxIoPjo76oA3i50FR6D98m5adkh4OM0Va5pzFa7WRDg" />
-
-  <!-- Google AdSense 所有権確認用 -->
   <meta name="google-adsense-account" content="ca-pub-3442358868880490">
 
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Google Analytics (GA4) -->
+  <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YVFY7H6N9E"></script>
-  
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-YVFY7H6N9E');
-</script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YVFY7H6N9E');
+  </script>
 
-  <!-- ✅ Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3442358868880490"
-      crossorigin="anonymous"></script>
+  <!-- AdSense -->
+  <script async 
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3442358868880490"
+    crossorigin="anonymous"></script>
 
-<meta charset="UTF-8">
-<title>テリーおすすめコンボ</title>
 <style>
 body { 
   font-family: Arial, sans-serif; 
@@ -37,29 +33,29 @@ body {
   margin: 0;
 }
 
-/* 戻るボタン */ガイル
 .back-buttons { 
   margin-bottom: 20px; 
   text-align: center; 
 }
+
 .back-buttons button {
   margin: 0 5px;
   padding: 6px 12px;
   border: none;
   border-radius: 5px;
-  background: #888;
+  background: #444;
   color: #fff;
   cursor: pointer;
 }
 
-/* コンボ表示 */
 .combo-row-wrapper {
   display: flex;
   align-items: flex-start;
   gap: 12px; 
   margin-bottom: 25px;
-  flex-wrap: wrap; /* スマホでも折り返し */
+  flex-wrap: wrap;
 }
+
 .combo-card {
   background: #f0f0f0;
   border-radius: 12px;
@@ -69,54 +65,38 @@ body {
   flex-direction: column;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
 .combo-title { 
   font-weight: bold; 
   font-size: 16px; 
   margin-bottom: 10px; 
 }
+
 .moves-container { 
   display: flex; 
   flex-wrap: wrap; 
   gap: 10px;
 }
+
 .moves-container img { 
   width: 120px; 
   height: 120px; 
   object-fit: contain; 
   border-radius: 8px; 
-  background: #f9f9f9; 
+  background: #ffffff; 
 }
 
-/* スマホ対応 */
 @media (max-width: 480px) {
-  .combo-row-wrapper { flex-direction: column; }
+  .combo-row-wrapper { 
+    flex-direction: column; 
+  }
 }
 </style>
 </head>
+
 <body>
 
-<!-- ページ上部広告（ページマッチ） -->
-<div id="ad-top">
-<script type="text/javascript">
-rakuten_design="slide";
-rakuten_affiliateId="1e419771.05d3cae2.1e419772.c9642a45";
-rakuten_items="ctsmatch";
-rakuten_genreId="0";
-rakuten_size="728x90";
-rakuten_target="_blank";
-rakuten_theme="gray";
-rakuten_border="off";
-rakuten_auto_mode="on";
-rakuten_genre_title="off";
-rakuten_recommend="on";
-rakuten_ts="1758815505294";
-</script>
-<script type="text/javascript" src="https://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js?20230106"></script>
-</div>
-
-<!-- ページ内容 -->
-<div id="main-content">
-<h2>テリーおすすめコンボ</h2>
+<h2>ガイルおすすめコンボ</h2>
 
 <div class="back-buttons">
   <button onclick="location.href='index.html'">🏠 トップへ戻る</button>
@@ -124,32 +104,11 @@ rakuten_ts="1758815505294";
 </div>
 
 <div id="combo-display"></div>
-</div>
-
-<!-- ページ下部広告（ランキング） -->
-<div id="ad-bottom">
-<script type="text/javascript">
-rakuten_design="slide";
-rakuten_affiliateId="1e419771.05d3cae2.1e419772.c9642a45";
-rakuten_items="ranking";
-rakuten_genreId="0";
-rakuten_size="728x90";
-rakuten_target="_blank";
-rakuten_theme="gray";
-rakuten_border="off";
-rakuten_auto_mode="on";
-rakuten_genre_title="off";
-rakuten_recommend="on";
-rakuten_ts="1758815521296";
-</script>
-<script type="text/javascript" src="https://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js?20230106"></script>
-</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
-// Firebase 設定
 const firebaseConfig = {
   apiKey: "AIzaSyAD4fyc-1VlEEGGO631hhpZqCOqllrQ3og",
   authDomain: "st6-combo-maker.firebaseapp.com",
@@ -164,19 +123,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const comboDisplay = document.getElementById("combo-display");
 
-// テリー用ドキュメント
-const docRef = doc(db, "combos", "テリー");
+// 🔵 Firestore ドキュメント（ガイル）
+const docRef = doc(db, "combos", "ガイル");
 
-// リアルタイム取得
 onSnapshot(docRef, (docSnap) => {
   comboDisplay.innerHTML = "";
+
   if (docSnap.exists()) {
     const rows = docSnap.data().rows || [];
+
     rows.forEach((r) => {
       const wrapper = document.createElement("div");
       wrapper.className = "combo-row-wrapper";
 
-      // コンボカード
       const card = document.createElement("div");
       card.className = "combo-card";
 
@@ -190,16 +149,19 @@ onSnapshot(docRef, (docSnap) => {
 
       r.moves.forEach(mv => {
         const img = document.createElement("img");
-        img.src = `images/ガイル/${mv}.png`;
+
+        // 🔵 ここを guile フォルダに変更
+        img.src = `images/guile/${mv}.png`;
+
         img.alt = mv;
         movesContainer.appendChild(img);
       });
 
       card.appendChild(movesContainer);
       wrapper.appendChild(card);
-
       comboDisplay.appendChild(wrapper);
     });
+
   } else {
     comboDisplay.innerHTML = "<p>おすすめコンボがまだ登録されていません。</p>";
   }
