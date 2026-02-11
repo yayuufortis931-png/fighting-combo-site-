@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+        <!-- Google Analytics (GA4) -->
+ <script async src="https://www.googletagmanager.com/gtag/js?id=G-YVFY7H6N9E"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YVFY7H6N9E');
+</script>
+
+<meta charset="UTF-8">
+<title>ダルシム コンボ管理</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+#page-nav { margin-bottom: 20px; }
+#page-nav button, #add-page-btn, #save-btn, #back-main, #add-row-btn {
+  margin-right: 8px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer;
+  background: #666; color: white; transition: background 0.2s;
+}
+#page-nav button:hover, #add-page-btn:hover, #save-btn:hover, #back-main:hover, #add-row-btn:hover { background: #444; }
+#page-nav button[style*="bold"] { background: #333; }
+.combo-row {
+  margin-bottom: 20px; padding: 12px; border: 2px solid #666; border-radius: 8px;
+  background: #fff; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: grab;
+}
+.combo-row.placeholder {
+  border: 2px dashed #2196f3; background: #e0f0ff; min-height: 80px;
+}
+.row-header { display: flex; justify-content: flex-start; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.row-title { font-weight: bold; font-size: 15px; padding: 4px; flex: 1; }
+.action-btn { border: none; border-radius: 5px; padding: 4px 8px; cursor: pointer; color: white; font-size: 13px; }
+.delete { background: #e53935; }
+.duplicate { background: #ff9800; }
+.copy { background: #43a047; }
+.controls { margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.image-container { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
+.image-box { position: relative; width: 100px; height: 100px; border: 1px solid #ccc; border-radius: 6px; overflow: hidden; background: #fafafa; }
+.image-box img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; z-index: 10; }
+.combo-output { display: flex; align-items: center; gap: 6px; margin-top: 10px; background: #f9f9f9; padding: 6px 8px; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; font-size: 14px; }
+.combo-text { flex: 1; text-align: left; }
+
+/* ====== スマホ用ボタン拡大 ====== */
+@media (max-width: 768px) {
+  #page-nav button,
+  #add-page-btn,
+  #save-btn,
+  #back-main,
+  #add-row-btn,
+  .action-btn {
+    padding: 12px 20px;
+    font-size: 18px;
+  }
+
+  .row-title {
+    font-size: 18px;
+    padding: 8px;
+  }
+
+  .image-box {
+    width: 120px;
+    height: 120px;
+  }
+
+  .combo-output {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+}
+</style>
+</head>
+<body>
+<h2>ダルシム コンボ管理</h2>
+<div id="page-nav"></div>
+<button id="add-page-btn">＋ ページ追加</button>
+<button id="save-btn">💾 保存</button>
+<button id="back-main">メインページに戻る</button>
+<button id="add-row-btn">＋ 段を追加</button>
+<div id="combo-area"></div>
+
+<script>
+// ====== 共通変数 ======
+const comboArea = document.getElementById("combo-area");
+const pageNav = document.getElementById("page-nav");
+const addPageBtn = document.getElementById("add-page-btn");
+const saveBtn = document.getElementById("save-btn");
+const backMainBtn = document.getElementById("back-main");
+const addRowBtn = document.getElementById("add-row-btn");
+
+let pages = ["default","recommended"];
+let currentPage = pages[0];
+let rowCount = 0;
+
+// ====== ダルシム技リスト ======
+const moveList = [
+ "5弱P","2弱P","5弱K","1弱K","2弱K",
+  "5中P","4中P","2中P","5中K","4中K","1中K","2中K",
+  "5強P","6強P","1強P","2強P","5強K","1強K","2強K", 
+  "弱ヨガファイア","中ヨガファイア","強ヨガファイア","OD弱ヨガファイア","OD中ヨガファイア","OD強ヨガファイア",
+  "弱ヨガアーチ","中ヨガアーチ","強ヨガアーチ","OD弱ヨガアーチ","OD中ヨガアーチ","OD強ヨガアーチ",
+  "弱ヨガブラスト","中ヨガブラスト","強ヨガブラスト","ODヨガブラスト",
+  "弱ヨガフレイム","中ヨガフレイム","強ヨガフレイム","ODヨガフレイム",
+  "ヨガフロート","前ヨガテレポート","後ろヨガテレポート",
+  "SA1弱","SA1中","SA1強","SA2","SA3",
+  "ドライブラッシュ","cDR","ドライブインパクト","投げ","ジャンプ","前ステップ","バックステップ","ディレイ",
+  "【溜め】弱ヨガファイア","【溜め】中ヨガファイア","【溜め】強ヨガファイア",
+  "J弱P","J2弱P","J中P","J強P","J弱K","J中K","J強K","ここまで1コンボ"
+  ]; 
+
+const imageMap = {}; moveList.forEach(m=>imageMap[m]=`images/dhalsim/${m}.png`);
+
+// ====== ページ切替 ======
+function renderPageNav(){
+  pageNav.innerHTML="";
+  pages.forEach(p=>{
+    const btn=document.createElement("button"); btn.textContent=p;
+    if(p==="recommended") btn.addEventListener("click",()=>location.href="dhalsim_recommended.html");
+    else btn.addEventListener("click",()=>{ saveCurrentPage(); currentPage=p; loadPage(); renderPageNav(); });
+    if(p===currentPage) btn.style.fontWeight="bold";
+    pageNav.appendChild(btn);
+  });
+}
+renderPageNav();
+
+// ====== ページ追加 ======
+addPageBtn.addEventListener("click",()=>{
+  const name=prompt("新しいページ名を入力"); if(!name) return;
+  if(pages.includes(name)){ alert("すでに存在するページ名です"); return; }
+  pages.push(name); currentPage=name; loadPage(); renderPageNav();
+});
+
+// ====== 戻る ======
+backMainBtn.addEventListener("click",()=>location.href="index.html");
+
+// ====== 保存 ======
+saveBtn.addEventListener("click",()=>{ saveCurrentPage(); alert("保存しました！"); });
+function saveCurrentPage(){
+  const data=[...document.querySelectorAll(".combo-row")].map(row=>({
+      title: row.querySelector(".row-title").value,
+      moves: [...row.querySelectorAll(".image-box img")].map(img=>img.alt)
+  }));
+  localStorage.setItem(`comboData_dhalsim_${currentPage}`,JSON.stringify(data));
+}
+
+// ====== ページ読み込み ======
+function loadPage(){
+  comboArea.innerHTML=""; rowCount=0;
+  const data=JSON.parse(localStorage.getItem(`comboData_dhalsim_${currentPage}`)||"[]");
+  data.forEach(d=>addRow(d));
+}
+loadPage();
+
+// ====== 段追加 ======
+addRowBtn.addEventListener("click",()=>addRow());
+function addRow(savedData=null){
+  rowCount++;
+  const row=document.createElement("div"); row.className="combo-row"; row.draggable=true;
+
+  // header
+  const header=document.createElement("div"); header.className="row-header";
+  const title=document.createElement("input"); title.type="text"; title.value=savedData?.title||`コンボ${rowCount}`; title.className="row-title";
+  const del=makeBtn("削除","delete",()=>row.remove());
+  const dup=makeBtn("複製","duplicate",()=>duplicateRow(row));
+  header.append(title,del,dup);
+  row.appendChild(header);
+
+  // controls
+  const controls=document.createElement("div"); controls.className="controls";
+  const select=document.createElement("select");
+  const def=document.createElement("option"); def.value=""; def.textContent="技を選択"; select.append(def);
+  moveList.forEach(m=>{ const o=document.createElement("option"); o.value=m; o.textContent=m; select.append(o); });
+  const addBtn=document.createElement("button"); addBtn.textContent="追加"; controls.append(select,addBtn);
+  row.appendChild(controls);
+
+  // image container
+  const container=document.createElement("div"); container.className="image-container";
+  row.appendChild(container);
+
+  // combo output
+  const output=document.createElement("div"); output.className="combo-output";
+  const text=document.createElement("div"); text.className="combo-text"; text.textContent=savedData?.moves?.join(" > ")||"";
+  const copy=makeBtn("コピー","copy",()=>navigator.clipboard.writeText(text.textContent));
+  output.append(text,copy);
+  row.appendChild(output);
+
+  // 初期画像
+  if(savedData?.moves) savedData.moves.forEach(m=>addImageBox(container,m,row));
+
+  // 追加ボタン
+  addBtn.addEventListener("click",()=>{ if(select.value) addImageBox(container,select.value,row); });
+
+  // 段ドラッグ（PC限定）
+  addRowDragAndDrop(row);
+
+  comboArea.appendChild(row);
+  return row;
+}
+
+// ====== 複製 ======
+function duplicateRow(row){
+  const title=row.querySelector(".row-title").value+"_コピー";
+  const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
+  const newRow=addRow({title,moves});
+  row.after(newRow);
+}
+
+// ====== 汎用ボタン ======
+function makeBtn(label,type,fn){
+  const b=document.createElement("button");
+  b.textContent=label; b.className=`action-btn ${type}`; b.addEventListener("click",fn);
+  return b;
+}
+
+// ====== 画像追加 ======
+function addImageBox(container,move,row){
+  const box=document.createElement("div"); box.className="image-box";
+  const img=document.createElement("img"); img.src=imageMap[move]; img.alt=move;
+  const del=document.createElement("button"); del.textContent="×"; del.className="delete-btn";
+
+  // 重要: 親のドラッグ開始を無効化して削除クリックを通す
+  del.addEventListener("mousedown", (e)=> { e.stopPropagation(); });
+
+  del.addEventListener("click",()=>{ box.remove(); updateComboText(row); });
+  container.appendChild(box); box.appendChild(img); box.appendChild(del);
+
+  // PC限定ドラッグ
+  addImageDragAndDrop(box,container,row);
+  updateComboText(row);
+}
+
+// ====== 画像ドラッグ（PCのみ） ======
+function addImageDragAndDrop(element, container, row){
+  if (/Mobi|Android/i.test(navigator.userAgent)) return; // スマホでは無効化
+
+  let ghost = null;
+  let offsetX = 0, offsetY = 0;
+
+  element.addEventListener("mousedown", e=>{
+    // 重要: 削除ボタン上の操作はドラッグを開始しない
+    if (e.target.closest('.delete-btn')) return;
+
+    e.preventDefault();
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+
+    ghost = element.cloneNode(true);
+    ghost.style.position = "absolute";
+    ghost.style.pointerEvents = "none";
+    ghost.style.opacity = "0.6";
+    ghost.style.zIndex = 1000;
+    ghost.style.width = element.offsetWidth + "px";
+    ghost.style.height = element.offsetHeight + "px";
+    document.body.appendChild(ghost);
+    moveGhost(e.pageX, e.pageY);
+
+    element.style.visibility = "hidden";
+
+    function moveGhost(pageX, pageY){
+      ghost.style.left = pageX - offsetX + "px";
+      ghost.style.top = pageY - offsetY + "px";
+    }
+
+    function onMouseMove(e){
+      moveGhost(e.pageX, e.pageY);
+    }
+
+    document.addEventListener("mousemove", onMouseMove);
+
+    document.addEventListener("mouseup", function onMouseUp(e){
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+
+      const boxes = [...container.querySelectorAll(".image-box")].filter(b=>b!==element);
+      let inserted = false;
+      for(const b of boxes){
+        const rect = b.getBoundingClientRect();
+        if(e.clientX < rect.left + rect.width/2){
+          container.insertBefore(element, b);
+          inserted = true;
+          break;
+        }
+      }
+      if(!inserted) container.appendChild(element);
+
+      element.style.visibility = "visible";
+      if (ghost) ghost.remove();
+      ghost = null;
+      updateComboText(row);
+    });
+  });
+}
+
+// ====== 段ドラッグ（PCのみ） ======
+function addRowDragAndDrop(row){
+  if (/Mobi|Android/i.test(navigator.userAgent)) return; // スマホでは無効化
+
+  let placeholder = null;
+  row.addEventListener("dragstart", e=>{
+    row.classList.add("row-dragging");
+    placeholder = document.createElement("div");
+    placeholder.className="combo-row placeholder";
+    placeholder.style.height = row.offsetHeight + "px";
+    row.parentNode.insertBefore(placeholder, row.nextSibling);
+    row.style.opacity="0.4";
+  });
+
+  row.addEventListener("dragend", e=>{
+    row.classList.remove("row-dragging");
+    row.style.opacity="1";
+    if(placeholder){
+      placeholder.parentNode.replaceChild(row, placeholder);
+      placeholder=null;
+    }
+  });
+
+  comboArea.addEventListener("dragover", e=>{
+    e.preventDefault();
+    const dragging=document.querySelector(".row-dragging");
+    if(!dragging || !placeholder) return;
+    const after=getDragAfterRow(comboArea,e.clientY);
+    if(after) comboArea.insertBefore(placeholder, after);
+    else comboArea.appendChild(placeholder);
+  });
+}
+
+function getDragAfterRow(container,y){
+  const els=[...container.querySelectorAll(".combo-row:not(.row-dragging)")];
+  if(els.length===0) return null;
+  return els.find(el=>y<el.getBoundingClientRect().top + el.getBoundingClientRect().height/2);
+}
+
+// ====== コンボテキスト更新 ======
+function updateComboText(row){
+  const moves=[...row.querySelectorAll(".image-box img")].map(img=>img.alt);
+  row.querySelector(".combo-text").textContent=moves.join(" > ");
+}
+</script>
+</body>
+</html>
