@@ -11,7 +11,7 @@
 </script>
 
 <meta charset="UTF-8">
-<title>viper Guard Board</title>
+<title>alex Guard Board</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -136,7 +136,7 @@
   <button onclick="showPage(2)">2ページ目 (ボード)</button>
 </header>
 
-<h1>viper Guard Board</h1>
+<h1>alex Guard Board</h1>
 
 <div id="page1" class="page active"></div>
 <div id="page2" class="page">
@@ -237,7 +237,7 @@ function renderPage1(){
       const card=document.createElement('div');
       card.className='card';
       card.innerHTML=`
-        <img src="../images/viper/${m.name}.png" alt="${m.name}">
+        <img src="../images/alex/${m.name}.png" alt="${m.name}">
         <span class="frame ${getFrameClass(m.frame)}">${m.frame}</span>
       `;
       cardsDiv.appendChild(card);
@@ -256,7 +256,7 @@ function renderPage2(){
     const card=document.createElement('div');
     card.className='card';
     card.innerHTML=`
-      <img src="../images/viper/${data.name}.png" alt="${data.name}">
+      <img src="../images/alex/${data.name}.png" alt="${data.name}">
       <span class="frame ${frameClass}">${data.frame}</span>
     `;
     board.appendChild(card);
